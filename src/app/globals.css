@@ -1,26 +1,140 @@
 @import "tailwindcss";
 
+/*
+  Tema cinematográfico da Filmar Produtora.
+  Paleta: preto/grafite com destaque âmbar/dourado.
+  Dark mode é o padrão (sem toggle) — visual de produtora audiovisual.
+*/
+
+@theme {
+  /* Fontes (variáveis definidas no layout via next/font) */
+  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-display), ui-serif, Georgia, serif;
+
+  /* Tons de fundo (preto -> grafite) */
+  --color-ink-950: #050505;
+  --color-ink-900: #0a0a0b;
+  --color-ink-850: #101012;
+  --color-ink-800: #16161a;
+  --color-ink-700: #1f1f24;
+  --color-ink-600: #2a2a30;
+
+  /* Neutros / texto */
+  --color-mist-100: #f5f5f4;
+  --color-mist-300: #d4d4d2;
+  --color-mist-400: #a8a8a4;
+  --color-mist-500: #78786f;
+
+  /* Destaque azul celeste (identidade da marca — "ar" da logo) */
+  --color-sky-glow: #7db8e8;
+  --color-sky-bright: #9ccdf2;
+  --color-sky-deep: #5591c8;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: var(--color-ink-950);
+  --foreground: var(--color-mist-100);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@layer base {
+  * {
+    border-color: var(--color-ink-700);
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  html {
+    scroll-behavior: smooth;
+    /* compensa a navbar fixa ao rolar para âncoras */
+    scroll-padding-top: 5rem;
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Respeita usuários que preferem menos movimento */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@utility text-balance {
+  text-wrap: balance;
+}
+
+/* Gradiente de destaque reutilizável */
+@utility bg-sky-gradient {
+  background-image: linear-gradient(
+    135deg,
+    var(--color-sky-bright),
+    var(--color-sky-deep)
+  );
+}
+
+@utility text-sky-gradient {
+  background-image: linear-gradient(
+    135deg,
+    var(--color-sky-bright),
+    var(--color-sky-glow)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Animações de entrada usadas nas seções */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@utility animate-fade-up {
+  animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@utility animate-fade-in {
+  animation: fade-in 1s ease both;
+}
+
+/* Scrollbar discreta combinando com o tema */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-ink-900);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-ink-600);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-mist-500);
 }

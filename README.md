@@ -1,36 +1,126 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Filmar Produtora — Landing Page
 
-## Getting Started
+Landing page moderna e cinematográfica para a **Filmar Produtora**, com portfólio
+de vídeos gerenciável, painel administrativo e formulário de contato que captura
+leads e envia notificação por email.
 
-First, run the development server:
+## Stack
+
+- **Next.js 16** (App Router, TypeScript, Turbopack)
+- **React 19**
+- **Tailwind CSS v4** (CSS-first, tema em `globals.css`)
+- **Supabase** (`@supabase/ssr`) — banco de dados, Storage e Auth
+- **Resend** — notificação de novos leads por email
+- **React Hook Form + Zod** — validação de formulários
+
+## Estrutura
+
+```
+src/
+├── app/
+│   ├── layout.tsx            # layout raiz, fontes, metadata/SEO
+│   ├── page.tsx              # landing (Hero, Sobre, Serviços, Portfólio, Contato)
+│   ├── globals.css           # tema (cores da marca, utilities)
+│   ├── sitemap.ts, robots.ts, opengraph-image.tsx
+│   └── admin/                # painel protegido
+│       ├── layout.tsx        # verifica sessão + header
+│       ├── page.tsx          # CRUD de projetos + lista de leads
+│       └── login/page.tsx
+├── components/
+│   ├── layout/ (navbar, footer)
+│   ├── sections/ (hero, about, services, portfolio, contact, ...)
+│   ├── admin/ (projects-manager, project-form)
+│   └── ui/ (button, input, textarea, logo, reveal, social-icons)
+├── lib/
+│   ├── supabase/ (client, server, proxy, types)
+│   ├── actions/ (contact, auth, projects)
+│   ├── data/ (projects, leads)
+│   ├── email.ts, site.ts, validation.ts, utils.ts
+└── proxy.ts                  # protege /admin e atualiza a sessão
+```
+
+> No Next.js 16 o antigo `middleware` chama-se **`proxy`** (`src/proxy.ts`).
+
+## Configuração
+
+### 1. Instalar dependências
+
+```bash
+npm install
+```
+
+### 2. Variáveis de ambiente
+
+Copie `.env.example` para `.env.local` e preencha:
+
+```bash
+NEXT_PUBLIC_SUPABASE_URL=       # Supabase > Project Settings > API
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=      # secreta — nunca expor no client
+RESEND_API_KEY=                 # https://resend.com/api-keys
+LEAD_NOTIFICATION_FROM="Filmar Produtora <onboarding@resend.dev>"
+LEAD_NOTIFICATION_TO=contato@filmarprodutora.com
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+```
+
+> O `.env.local` tem **precedência** sobre o `.env` no Next.js e é ignorado
+> pelo git.
+
+### 3. Banco de dados e Storage
+
+No dashboard do Supabase, abra o **SQL Editor** e rode o conteúdo de
+[`supabase/schema.sql`](./supabase/schema.sql). Ele cria:
+
+- Tabelas `projects` e `leads`
+- Políticas de RLS (leitura pública de projetos, escrita só autenticada; inserção
+  pública de leads, leitura só autenticada)
+- Buckets de Storage `videos` e `thumbnails` (públicos para leitura)
+
+### 4. Criar o usuário admin
+
+Não há tela de cadastro aberta (por segurança). Crie o admin no
+**Supabase Dashboard > Authentication > Users > Add user**, marcando
+_"Auto confirm user"_. Use esse email/senha para entrar em `/admin`.
+
+## Rodando o projeto
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Acesse `http://localhost:3000`. O painel fica em `http://localhost:3000/admin`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Rede corporativa (interceptação de SSL)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Se aparecer o erro `fetch failed` / `SELF_SIGNED_CERT_IN_CHAIN` ao conectar no
+Supabase, sua rede provavelmente intercepta HTTPS com um certificado próprio.
+Para desenvolver mesmo assim, use:
 
-## Learn More
+```bash
+npm run dev:insecure
+```
 
-To learn more about Next.js, take a look at the following resources:
+Esse script desabilita a verificação de TLS **apenas em desenvolvimento local**.
+Nunca use em produção. A solução definitiva é apontar o certificado raiz da sua
+empresa via `NODE_EXTRA_CA_CERTS`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Uso do painel
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Acesse `/admin` e faça login.
+2. Em **Projetos**, clique em _Novo projeto_, preencha título/categoria/cliente,
+   faça upload do vídeo (mp4/webm) e da thumbnail, defina destaque e ordem.
+3. O projeto aparece automaticamente no portfólio da home.
+4. Em **Leads**, veja os contatos recebidos pelo formulário.
 
-## Deploy on Vercel
+## Build de produção
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npm run build
+npm run start
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Deploy
+
+Recomendado: **Vercel**. Configure as mesmas variáveis de ambiente no painel do
+projeto. Ajuste `NEXT_PUBLIC_SITE_URL` para o domínio final e o
+`LEAD_NOTIFICATION_FROM` para um domínio verificado no Resend.
