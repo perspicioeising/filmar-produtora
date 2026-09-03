@@ -1,48 +1,45 @@
 import { Mail, Phone, MapPin, MessageCircle } from "lucide-react";
 import { Reveal } from "@/components/ui/reveal";
 import { ContactForm } from "./contact-form";
-import { siteConfig } from "@/lib/site";
+import type { ContactContent } from "@/lib/supabase/types";
 
-export function Contact() {
+export function Contact({ content }: { content: ContactContent }) {
   return (
     <section id="contato" className="border-t border-ink-800 py-16 sm:py-24 lg:py-32">
       <div className="mx-auto grid max-w-6xl gap-10 px-6 lg:grid-cols-2 lg:gap-14">
         <Reveal>
           <p className="text-sm uppercase tracking-[0.25em] text-sky-glow">
-            Vamos conversar
+            {content.eyebrow}
           </p>
           <h2 className="mt-4 font-display text-3xl font-semibold text-balance sm:text-4xl lg:text-5xl">
-            Conte sua ideia. A gente coloca em movimento.
+            {content.title}
           </h2>
-          <p className="mt-6 text-mist-400">
-            Preencha o formulário ou fale com a gente pelos canais abaixo.
-            Respondemos rápido e adoramos um bom projeto.
-          </p>
+          <p className="mt-6 text-mist-400">{content.paragraph}</p>
 
           <ul className="mt-10 space-y-5">
             <ContactItem
               icon={<Mail size={18} />}
               label="Email"
-              value={siteConfig.email}
-              href={`mailto:${siteConfig.email}`}
+              value={content.email}
+              href={`mailto:${content.email}`}
             />
             <ContactItem
               icon={<Phone size={18} />}
               label="Telefone"
-              value={siteConfig.phone}
-              href={`tel:${siteConfig.phone.replace(/\D/g, "")}`}
+              value={content.phone}
+              href={`tel:${content.phone.replace(/\D/g, "")}`}
             />
             <ContactItem
               icon={<MessageCircle size={18} />}
               label="WhatsApp"
               value="Enviar mensagem"
-              href={`https://wa.me/${siteConfig.whatsapp}`}
+              href={`https://wa.me/${content.whatsapp}`}
               external
             />
             <ContactItem
               icon={<MapPin size={18} />}
               label="Localização"
-              value={siteConfig.location}
+              value={content.location}
             />
           </ul>
         </Reveal>

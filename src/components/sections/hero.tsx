@@ -1,8 +1,8 @@
 import { ArrowRight, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { siteConfig } from "@/lib/site";
+import type { HeroContent } from "@/lib/supabase/types";
 
-export function Hero() {
+export function Hero({ content }: { content: HeroContent }) {
   return (
     <section
       id="hero"
@@ -28,21 +28,20 @@ export function Hero() {
         <div className="max-w-3xl">
           <p className="animate-fade-in inline-flex items-center gap-2 rounded-full border border-ink-600 bg-ink-850/60 px-4 py-1.5 text-[0.65rem] uppercase tracking-[0.2em] text-sky-glow backdrop-blur sm:text-xs sm:tracking-[0.25em]">
             <span className="h-1.5 w-1.5 rounded-full bg-sky-bright" />
-            Produtora Audiovisual
+            {content.badge}
           </p>
 
           <h1 className="animate-fade-up mt-6 font-display text-4xl font-semibold leading-[1.08] text-balance sm:text-6xl md:text-7xl">
-            Damos vida às suas{" "}
-            <span className="text-sky-gradient">histórias</span> em movimento
+            {content.titlePrefix}
+            <span className="text-sky-gradient">{content.titleHighlight}</span>
+            {content.titleSuffix}
           </h1>
 
           <p
             className="animate-fade-up mt-5 max-w-xl text-base text-mist-400 sm:mt-6 sm:text-lg"
             style={{ animationDelay: "0.1s" }}
           >
-            Da concepção à entrega, produzimos comerciais, clipes, coberturas de
-            eventos e motion design com uma linguagem visual marcante e
-            cinematográfica.
+            {content.paragraph}
           </p>
 
           <div
@@ -50,7 +49,7 @@ export function Hero() {
             style={{ animationDelay: "0.2s" }}
           >
             <Button href="#portfolio" size="lg" className="w-full sm:w-auto">
-              Ver portfólio
+              {content.primaryCta}
               <ArrowRight size={18} />
             </Button>
             <Button
@@ -60,7 +59,7 @@ export function Hero() {
               className="w-full sm:w-auto"
             >
               <Play size={16} />
-              Começar um projeto
+              {content.secondaryCta}
             </Button>
           </div>
 
@@ -69,11 +68,7 @@ export function Hero() {
             className="animate-fade-up mt-12 grid max-w-lg grid-cols-3 gap-4 border-t border-ink-700 pt-6 sm:mt-16 sm:gap-6 sm:pt-8"
             style={{ animationDelay: "0.3s" }}
           >
-            {[
-              { value: "+120", label: "Projetos entregues" },
-              { value: "+8", label: "Anos de estrada" },
-              { value: "+50", label: "Marcas atendidas" },
-            ].map((stat) => (
+            {content.metrics.map((stat) => (
               <div key={stat.label}>
                 <dt className="font-display text-2xl font-semibold text-mist-100 sm:text-3xl">
                   {stat.value}

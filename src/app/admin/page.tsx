@@ -1,15 +1,23 @@
 import { Mail, Phone } from "lucide-react";
 import { getProjects } from "@/lib/data/projects";
 import { getLeads } from "@/lib/data/leads";
+import { getSiteContent } from "@/lib/data/site-content";
 import { ProjectsManager } from "@/components/admin/projects-manager";
+import { ContentManager } from "@/components/admin/content-manager";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminPage() {
-  const [projects, leads] = await Promise.all([getProjects(), getLeads()]);
+  const [projects, leads, content] = await Promise.all([
+    getProjects(),
+    getLeads(),
+    getSiteContent(),
+  ]);
 
   return (
     <div className="space-y-14">
+      <ContentManager content={content} />
+
       <ProjectsManager projects={projects} />
 
       <section>

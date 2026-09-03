@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Mail, Phone, MapPin } from "lucide-react";
 import { navLinks, siteConfig } from "@/lib/site";
+import type { ContactContent } from "@/lib/supabase/types";
 import {
   InstagramIcon,
   YoutubeIcon,
@@ -8,47 +9,53 @@ import {
 } from "@/components/ui/social-icons";
 import { Logo } from "@/components/ui/logo";
 
-export function Footer() {
+export function Footer({ content }: { content: ContactContent }) {
   const year = new Date().getFullYear();
 
   return (
     <footer className="border-t border-ink-700 bg-ink-900">
       <div className="mx-auto grid max-w-6xl gap-10 px-6 py-14 md:grid-cols-3">
         <div>
-          <Link href="#hero" aria-label="Filmar Produtora">
+          <Link href="#hero" aria-label={siteConfig.name}>
             <Logo size="md" />
           </Link>
           <p className="mt-4 max-w-xs text-sm text-mist-400">
-            {siteConfig.description}
+            {content.description}
           </p>
           <div className="mt-5 flex gap-4">
-            <a
-              href={siteConfig.socials.instagram}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Instagram"
-              className="text-mist-400 transition-colors hover:text-sky-bright"
-            >
-              <InstagramIcon size={20} />
-            </a>
-            <a
-              href={siteConfig.socials.youtube}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="YouTube"
-              className="text-mist-400 transition-colors hover:text-sky-bright"
-            >
-              <YoutubeIcon size={20} />
-            </a>
-            <a
-              href={siteConfig.socials.vimeo}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Vimeo"
-              className="text-mist-400 transition-colors hover:text-sky-bright"
-            >
-              <VimeoIcon size={20} />
-            </a>
+            {content.instagram && (
+              <a
+                href={content.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+                className="text-mist-400 transition-colors hover:text-sky-bright"
+              >
+                <InstagramIcon size={20} />
+              </a>
+            )}
+            {content.youtube && (
+              <a
+                href={content.youtube}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="YouTube"
+                className="text-mist-400 transition-colors hover:text-sky-bright"
+              >
+                <YoutubeIcon size={20} />
+              </a>
+            )}
+            {content.vimeo && (
+              <a
+                href={content.vimeo}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Vimeo"
+                className="text-mist-400 transition-colors hover:text-sky-bright"
+              >
+                <VimeoIcon size={20} />
+              </a>
+            )}
           </div>
         </div>
 
@@ -78,19 +85,19 @@ export function Footer() {
             <li className="flex items-center gap-2">
               <Mail size={16} className="text-sky-glow" />
               <a
-                href={`mailto:${siteConfig.email}`}
+                href={`mailto:${content.email}`}
                 className="transition-colors hover:text-sky-bright"
               >
-                {siteConfig.email}
+                {content.email}
               </a>
             </li>
             <li className="flex items-center gap-2">
               <Phone size={16} className="text-sky-glow" />
-              <span>{siteConfig.phone}</span>
+              <span>{content.phone}</span>
             </li>
             <li className="flex items-center gap-2">
               <MapPin size={16} className="text-sky-glow" />
-              <span>{siteConfig.location}</span>
+              <span>{content.location}</span>
             </li>
           </ul>
         </div>

@@ -17,6 +17,17 @@ create table if not exists public.projects (
   created_at timestamptz default now()
 );
 
+-- ─── Tabela: site_content (conteúdo editável da landing) ─────
+-- Uma linha por seção. A coluna `data` guarda o JSON da seção.
+-- Chaves esperadas em `key`: 'hero', 'about', 'services', 'contact'.
+-- O código usa defaults (src/lib/content/defaults.ts) como fallback,
+-- então esta tabela pode ficar vazia sem quebrar a landing page.
+create table if not exists public.site_content (
+  key text primary key,
+  data jsonb not null default '{}'::jsonb,
+  updated_at timestamptz default now()
+);
+
 -- ─── Tabela: leads (formulário de contato) ───────────────────
 create table if not exists public.leads (
   id uuid primary key default gen_random_uuid(),
@@ -30,6 +41,7 @@ create table if not exists public.leads (
 -- ─── Row Level Security ──────────────────────────────────────
 alter table public.projects enable row level security;
 alter table public.leads enable row level security;
+alter table public.site_content enable row level security;
 
 -- Projetos: leitura pública, escrita só para autenticados (admin)
 drop policy if exists "public read projects" on public.projects;
@@ -50,6 +62,22 @@ create policy "public insert leads" on public.leads
 drop policy if exists "auth read leads" on public.leads;
 create policy "auth read leads" on public.leads
   for select using (auth.role() = 'authenticated');
+
+-- Conteúdo do site: leitura pública, escrita só para autenticados (admin)
+drop policy if exists "public read site_content" on public.site_content;
+create policy "public read site_content" on public.site_content
+  for select using (true);
+
+drop policy if exists "auth write site_content" on public.site_content;
+create policy "auth write site_content" on public.site_content
+  for all
+  using (auth.role() = 'authenticated')
+  with check (auth.role() = 'authenticated');
+
+-- Verificação manual (SQL Editor do Supabase), após aplicar este script:
+--   select * from public.site_content;                       -- deve existir e (por padrão) vir vazia
+--   insert into public.site_content (key, data) values ('hero', '{}'::jsonb); -- só funciona autenticado
+-- A landing page continua funcionando mesmo com a tabela vazia (fallback no código).
 
 -- =============================================================
 -- STORAGE — buckets para vídeos e thumbnails

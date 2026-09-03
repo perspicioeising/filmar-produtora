@@ -1,20 +1,16 @@
-/** Configuração central do site — usada por navbar, footer e seções. */
+/**
+ * Configuração de identidade do site (não editável pelo admin).
+ *
+ * Os dados de contato, redes sociais, descrição e textos das seções
+ * agora são editáveis pelo painel e vivem em `src/lib/content/defaults.ts`
+ * (com fallback) + tabela `site_content` no Supabase. Mantenha aqui apenas
+ * o que é fixo por marca.
+ */
 
 export const siteConfig = {
   name: "Filmar Produtora",
   shortName: "Filmar",
   tagline: "Histórias em movimento",
-  description:
-    "Produtora audiovisual especializada em comerciais, clipes, coberturas de eventos e motion design.",
-  email: "contato@filmarprodutora.com",
-  phone: "+55 (11) 90000-0000",
-  whatsapp: "5511900000000",
-  location: "São Paulo, Brasil",
-  socials: {
-    instagram: "https://instagram.com/filmarprodutora",
-    youtube: "https://youtube.com/@filmarprodutora",
-    vimeo: "https://vimeo.com/filmarprodutora",
-  },
 };
 
 export const navLinks = [
