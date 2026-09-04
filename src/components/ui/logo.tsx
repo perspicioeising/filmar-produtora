@@ -13,7 +13,7 @@ export function Logo({ className, size = "md", showTagline = true }: LogoProps) 
   return (
     <span className={cn("inline-flex flex-col leading-none", className)}>
       <span className={cn("font-display font-semibold tracking-tight text-mist-100", sizes[size])}>
-        film<span className="text-sky-glow">ar</span>
+film<span className="text-sky-glow">ar</span>
       </span>
       {showTagline && (
         <span
