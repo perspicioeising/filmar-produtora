@@ -53,7 +53,7 @@ export async function sendLeadNotification(
 
 function buildText({ name, email, phone, message }: LeadEmailPayload): string {
   return [
-    "Novo contato pelo site da Filmar Produtora",
+    "Novo contato pelo site da Filmar",
     "",
     `Nome: ${name}`,
     `Email: ${email}`,
@@ -72,17 +72,17 @@ function buildHtml({ name, email, phone, message }: LeadEmailPayload): string {
       .replace(/>/g, "&gt;");
 
   return `
-  <div style="font-family:Arial,Helvetica,sans-serif;max-width:560px;margin:0 auto;background:#0a0a0b;color:#f5f5f4;border-radius:12px;overflow:hidden">
-    <div style="background:linear-gradient(135deg,#f5c15e,#b47a2c);padding:20px 24px">
-      <h1 style="margin:0;font-size:18px;color:#050505">Filmar Produtora</h1>
-      <p style="margin:4px 0 0;font-size:13px;color:#050505">Novo contato pelo site</p>
+  <div style="font-family:Arial,Helvetica,sans-serif;max-width:560px;margin:0 auto;background:#0f0f0f;color:#f2f1ef;border:1px solid #242424;overflow:hidden">
+    <div style="background:#141414;padding:20px 24px;border-bottom:1px solid #242424">
+      <h1 style="margin:0;font-size:18px;color:#f2f1ef;letter-spacing:2px">FILMAR</h1>
+      <p style="margin:4px 0 0;font-size:13px;color:#9a9a96">Novo contato pelo site</p>
     </div>
     <div style="padding:24px">
-      <p style="margin:0 0 12px"><strong style="color:#e6a54b">Nome:</strong> ${safe(name)}</p>
-      <p style="margin:0 0 12px"><strong style="color:#e6a54b">Email:</strong> ${safe(email)}</p>
-      <p style="margin:0 0 12px"><strong style="color:#e6a54b">Telefone:</strong> ${safe(phone || "não informado")}</p>
-      <p style="margin:16px 0 6px;color:#e6a54b"><strong>Mensagem:</strong></p>
-      <p style="margin:0;white-space:pre-wrap;line-height:1.6;color:#d4d4d2">${safe(message)}</p>
+      <p style="margin:0 0 12px"><strong style="color:#cfcecb">Nome:</strong> ${safe(name)}</p>
+      <p style="margin:0 0 12px"><strong style="color:#cfcecb">Email:</strong> ${safe(email)}</p>
+      <p style="margin:0 0 12px"><strong style="color:#cfcecb">Telefone:</strong> ${safe(phone || "não informado")}</p>
+      <p style="margin:16px 0 6px;color:#cfcecb"><strong>Mensagem:</strong></p>
+      <p style="margin:0;white-space:pre-wrap;line-height:1.6;color:#cfcecb">${safe(message)}</p>
     </div>
   </div>`;
 }

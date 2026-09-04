@@ -37,7 +37,7 @@ export function Navbar() {
       )}
     >
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-        <Link href="#hero" aria-label="Filmar Produtora" onClick={() => setOpen(false)}>
+        <Link href="#hero" aria-label="Filmar" onClick={() => setOpen(false)}>
           <Logo size="sm" />
         </Link>
 
@@ -57,7 +57,7 @@ export function Navbar() {
 
         <div className="hidden md:block">
           <Button href="#contato" size="sm">
-            Fale conosco
+            Contato
           </Button>
         </div>
 
@@ -99,7 +99,7 @@ export function Navbar() {
               className="w-full"
               onClick={() => setOpen(false)}
             >
-              Fale conosco
+              Contato
             </Button>
           </li>
         </ul>

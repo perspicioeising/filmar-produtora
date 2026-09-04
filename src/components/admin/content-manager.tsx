@@ -6,27 +6,47 @@ import type { SiteContent } from "@/lib/supabase/types";
 import { cn } from "@/lib/utils";
 import {
   AboutForm,
+  BeliefsForm,
   ContactForm,
   HeroForm,
+  PortfolioForm,
+  ProcessForm,
   ServicesForm,
+  StudioForm,
+  TransitionForm,
 } from "./content-forms";
 
 type Props = {
   content: SiteContent;
 };
 
-type SectionId = "hero" | "about" | "services" | "contact";
+type SectionId =
+  | "hero"
+  | "transition"
+  | "about"
+  | "studio"
+  | "services"
+  | "portfolio"
+  | "process"
+  | "beliefs"
+  | "contact";
 
 const sections: { id: SectionId; label: string; hint: string }[] = [
-  { id: "hero", label: "Hero", hint: "Título, badge, botões e métricas" },
-  { id: "about", label: "Sobre", hint: "Textos e pilares" },
-  { id: "services", label: "Serviços", hint: "Textos e cards de serviço" },
-  { id: "contact", label: "Contato", hint: "Dados de contato e redes" },
+  { id: "hero", label: "Hero", hint: "Título, descrição, CTA e mídia de fundo" },
+  { id: "transition", label: "Transição", hint: "Frase contemplativa após o hero" },
+  { id: "about", label: "Sobre mim", hint: "Andressa: abertura, textos e foto" },
+  { id: "studio", label: "Quem é a Filmar", hint: "Apresentação e 3 pilares" },
+  { id: "services", label: "Serviços", hint: "Categorias de trabalho" },
+  { id: "portfolio", label: "Portfólio", hint: "Título e descrição da seção" },
+  { id: "process", label: "Processo", hint: "Etapas de como trabalhamos" },
+  { id: "beliefs", label: "O que acreditamos", hint: "Bloco editorial" },
+  { id: "contact", label: "Contato", hint: "Textos, dados de contato e redes" },
 ];
 
 /**
  * Painel de edição do conteúdo da landing page, organizado em blocos
  * colapsáveis por seção. Cada bloco tem seu próprio formulário e Server Action.
+ * A ordem espelha a da landing page.
  */
 export function ContentManager({ content }: Props) {
   const [open, setOpen] = useState<SectionId | null>("hero");
@@ -41,7 +61,7 @@ export function ContentManager({ content }: Props) {
         Conteúdo do site
       </h2>
       <p className="mt-1 text-sm text-mist-500">
-        Edite os textos, contato, redes e métricas exibidos na landing page.
+        Edite os textos, contato, redes e seções exibidos na landing page.
       </p>
 
       <div className="mt-5 space-y-3">
@@ -78,11 +98,26 @@ export function ContentManager({ content }: Props) {
               {isOpen && (
                 <div className="border-t border-ink-700 p-6">
                   {section.id === "hero" && <HeroForm content={content.hero} />}
+                  {section.id === "transition" && (
+                    <TransitionForm content={content.transition} />
+                  )}
                   {section.id === "about" && (
                     <AboutForm content={content.about} />
                   )}
+                  {section.id === "studio" && (
+                    <StudioForm content={content.studio} />
+                  )}
                   {section.id === "services" && (
                     <ServicesForm content={content.services} />
+                  )}
+                  {section.id === "portfolio" && (
+                    <PortfolioForm content={content.portfolio} />
+                  )}
+                  {section.id === "process" && (
+                    <ProcessForm content={content.process} />
+                  )}
+                  {section.id === "beliefs" && (
+                    <BeliefsForm content={content.beliefs} />
                   )}
                   {section.id === "contact" && (
                     <ContactForm content={content.contact} />

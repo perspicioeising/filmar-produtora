@@ -5,39 +5,44 @@ import type { ContactContent } from "@/lib/supabase/types";
 
 export function Contact({ content }: { content: ContactContent }) {
   return (
-    <section id="contato" className="border-t border-ink-800 py-16 sm:py-24 lg:py-32">
-      <div className="mx-auto grid max-w-6xl gap-10 px-6 lg:grid-cols-2 lg:gap-14">
+    <section
+      id="contato"
+      className="border-t border-ink-800 py-24 sm:py-32 lg:py-40"
+    >
+      <div className="mx-auto grid max-w-6xl gap-12 px-6 lg:grid-cols-2 lg:gap-16">
         <Reveal>
-          <p className="text-sm uppercase tracking-[0.25em] text-sky-glow">
+          <p className="text-xs uppercase tracking-[0.3em] text-mist-500">
             {content.eyebrow}
           </p>
-          <h2 className="mt-4 font-display text-3xl font-semibold text-balance sm:text-4xl lg:text-5xl">
+          <h2 className="mt-6 text-4xl leading-tight text-balance text-mist-100 sm:text-5xl lg:text-6xl">
             {content.title}
           </h2>
-          <p className="mt-6 text-mist-400">{content.paragraph}</p>
+          <p className="mt-6 text-xl font-light text-mist-300">
+            {content.paragraph}
+          </p>
 
-          <ul className="mt-10 space-y-5">
+          <ul className="mt-12 space-y-5">
             <ContactItem
-              icon={<Mail size={18} />}
+              icon={<Mail size={18} strokeWidth={1.25} />}
               label="Email"
               value={content.email}
               href={`mailto:${content.email}`}
             />
             <ContactItem
-              icon={<Phone size={18} />}
+              icon={<Phone size={18} strokeWidth={1.25} />}
               label="Telefone"
               value={content.phone}
               href={`tel:${content.phone.replace(/\D/g, "")}`}
             />
             <ContactItem
-              icon={<MessageCircle size={18} />}
+              icon={<MessageCircle size={18} strokeWidth={1.25} />}
               label="WhatsApp"
               value="Enviar mensagem"
               href={`https://wa.me/${content.whatsapp}`}
               external
             />
             <ContactItem
-              icon={<MapPin size={18} />}
+              icon={<MapPin size={18} strokeWidth={1.25} />}
               label="Localização"
               value={content.location}
             />
@@ -45,8 +50,8 @@ export function Contact({ content }: { content: ContactContent }) {
         </Reveal>
 
         <Reveal delay={100}>
-          <div className="rounded-2xl border border-ink-700 bg-ink-850/50 p-6 sm:p-8">
-            <ContactForm />
+          <div className="border-t border-ink-700 pt-8 lg:border-l lg:border-t-0 lg:pl-12 lg:pt-0">
+            <ContactForm submitLabel={content.cta} />
           </div>
         </Reveal>
       </div>
@@ -69,7 +74,7 @@ function ContactItem({
 }) {
   const content = (
     <>
-      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-ink-800 text-sky-glow">
+      <span className="flex h-10 w-10 shrink-0 items-center justify-center border border-ink-700 text-mist-300">
         {icon}
       </span>
       <span>
@@ -89,7 +94,7 @@ function ContactItem({
           {...(external
             ? { target: "_blank", rel: "noopener noreferrer" }
             : {})}
-          className="flex items-center gap-4 transition-colors hover:text-sky-bright"
+          className="flex items-center gap-4 transition-colors hover:text-mist-300"
         >
           {content}
         </a>

@@ -31,28 +31,32 @@ export type IconItem = {
   text: string;
 };
 
-/** Métrica do hero (sem ícone). */
-export type Metric = {
-  value: string;
-  label: string;
-};
-
 export type HeroContent = {
-  badge: string;
-  titlePrefix: string;
-  titleHighlight: string;
-  titleSuffix: string;
-  paragraph: string;
-  primaryCta: string;
-  secondaryCta: string;
-  metrics: Metric[];
+  title: string;
+  description: string;
+  cta: string;
+  /** URL opcional de imagem/vídeo de fundo (mídia cinematográfica). */
+  mediaUrl: string;
 };
 
+export type TransitionContent = {
+  text: string;
+};
+
+/** "Sobre mim" (Andressa). Foto é opcional — slot para o futuro. */
 export type AboutContent = {
-  eyebrow: string;
   title: string;
-  paragraph1: string;
-  paragraph2: string;
+  openingLine: string;
+  paragraphs: string[];
+  /** URL opcional de foto pessoal. */
+  photoUrl: string;
+};
+
+/** "Quem é a Filmar" — apresentação do estúdio + 3 pilares. */
+export type StudioContent = {
+  title: string;
+  tagline: string;
+  paragraphs: string[];
   pillars: IconItem[];
 };
 
@@ -63,10 +67,35 @@ export type ServicesContent = {
   items: IconItem[];
 };
 
+/** Cabeçalho editável da seção de portfólio. */
+export type PortfolioContent = {
+  title: string;
+  description: string;
+};
+
+/** Etapa numerada do processo (sem ícone). */
+export type ProcessStep = {
+  title: string;
+  text: string;
+};
+
+export type ProcessContent = {
+  title: string;
+  description: string;
+  steps: ProcessStep[];
+};
+
+/** "O que acreditamos" — momento editorial. */
+export type BeliefsContent = {
+  title: string;
+  paragraphs: string[];
+};
+
 export type ContactContent = {
   eyebrow: string;
   title: string;
   paragraph: string;
+  cta: string;
   email: string;
   phone: string;
   whatsapp: string;
@@ -81,8 +110,13 @@ export type ContactContent = {
 /** Conteúdo completo do site, uma propriedade por seção. */
 export type SiteContent = {
   hero: HeroContent;
+  transition: TransitionContent;
   about: AboutContent;
+  studio: StudioContent;
   services: ServicesContent;
+  portfolio: PortfolioContent;
+  process: ProcessContent;
+  beliefs: BeliefsContent;
   contact: ContactContent;
 };
 

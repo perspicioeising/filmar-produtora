@@ -19,9 +19,11 @@ create table if not exists public.projects (
 
 -- ─── Tabela: site_content (conteúdo editável da landing) ─────
 -- Uma linha por seção. A coluna `data` guarda o JSON da seção.
--- Chaves esperadas em `key`: 'hero', 'about', 'services', 'contact'.
+-- Chaves esperadas em `key`: 'hero', 'transition', 'about', 'studio',
+-- 'services', 'portfolio', 'process', 'beliefs', 'contact'.
 -- O código usa defaults (src/lib/content/defaults.ts) como fallback,
--- então esta tabela pode ficar vazia sem quebrar a landing page.
+-- então esta tabela pode ficar vazia sem quebrar a landing page. Chaves
+-- ausentes simplesmente caem no fallback — não há migração destrutiva.
 create table if not exists public.site_content (
   key text primary key,
   data jsonb not null default '{}'::jsonb,

@@ -8,18 +8,24 @@ import {
 } from "@/lib/actions/site-content";
 import type {
   AboutContent,
+  BeliefsContent,
   ContactContent,
   HeroContent,
   IconItem,
-  Metric,
+  PortfolioContent,
+  ProcessContent,
+  ProcessStep,
   ServicesContent,
+  StudioContent,
+  TransitionContent,
 } from "@/lib/supabase/types";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { IconListEditor } from "./icon-list-editor";
-import { MetricsEditor } from "./metrics-editor";
+import { ParagraphsEditor } from "./paragraphs-editor";
+import { StepsEditor } from "./steps-editor";
 
 const initialState: SiteContentActionState = { status: "idle" };
 
@@ -88,82 +94,137 @@ export function HeroForm({ content }: { content: HeroContent }) {
     saveSiteContent,
     initialState,
   );
-  const [metrics, setMetrics] = useState<Metric[]>(content.metrics);
 
   return (
     <form action={formAction} className="space-y-4">
       <input type="hidden" name="key" value="hero" />
-      <input type="hidden" name="metrics" value={JSON.stringify(metrics)} />
 
-      <Labeled label="Badge (etiqueta acima do título)">
-        <Input name="badge" defaultValue={content.badge} />
+      <Labeled label="Título">
+        <Textarea name="title" defaultValue={content.title} required />
       </Labeled>
 
-      <div className="grid gap-4 sm:grid-cols-3">
-        <Labeled label="Título — início">
-          <Input name="titlePrefix" defaultValue={content.titlePrefix} />
-        </Labeled>
-        <Labeled label="Título — destaque">
-          <Input name="titleHighlight" defaultValue={content.titleHighlight} />
-        </Labeled>
-        <Labeled label="Título — fim">
-          <Input name="titleSuffix" defaultValue={content.titleSuffix} />
-        </Labeled>
-      </div>
-
-      <Labeled label="Parágrafo">
-        <Textarea name="paragraph" defaultValue={content.paragraph} />
+      <Labeled label="Descrição">
+        <Textarea name="description" defaultValue={content.description} />
       </Labeled>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Labeled label="Botão principal">
-          <Input name="primaryCta" defaultValue={content.primaryCta} required />
+        <Labeled label="Botão (CTA)">
+          <Input name="cta" defaultValue={content.cta} required />
         </Labeled>
-        <Labeled label="Botão secundário">
+        <Labeled label="Mídia de fundo — URL (imagem ou vídeo, opcional)">
           <Input
-            name="secondaryCta"
-            defaultValue={content.secondaryCta}
-            required
+            name="mediaUrl"
+            defaultValue={content.mediaUrl}
+            placeholder="https://... .mp4 ou .jpg"
           />
         </Labeled>
       </div>
-
-      <MetricsEditor metrics={metrics} onChange={setMetrics} />
 
       <StatusBar state={state} pending={pending} />
     </form>
   );
 }
 
-// ─── About ───────────────────────────────────────────────────────
+// ─── Transição ───────────────────────────────────────────────────
+
+export function TransitionForm({ content }: { content: TransitionContent }) {
+  const [state, formAction, pending] = useActionState(
+    saveSiteContent,
+    initialState,
+  );
+
+  return (
+    <form action={formAction} className="space-y-4">
+      <input type="hidden" name="key" value="transition" />
+
+      <Labeled label="Texto">
+        <Textarea name="text" defaultValue={content.text} required rows={3} />
+      </Labeled>
+
+      <StatusBar state={state} pending={pending} />
+    </form>
+  );
+}
+
+// ─── Sobre mim ───────────────────────────────────────────────────
 
 export function AboutForm({ content }: { content: AboutContent }) {
   const [state, formAction, pending] = useActionState(
     saveSiteContent,
     initialState,
   );
-  const [pillars, setPillars] = useState<IconItem[]>(content.pillars);
+  const [paragraphs, setParagraphs] = useState<string[]>(content.paragraphs);
 
   return (
     <form action={formAction} className="space-y-4">
       <input type="hidden" name="key" value="about" />
+      <input
+        type="hidden"
+        name="paragraphs"
+        value={JSON.stringify(paragraphs)}
+      />
+
+      <Labeled label="Título">
+        <Input name="title" defaultValue={content.title} required />
+      </Labeled>
+
+      <Labeled label="Frase de abertura">
+        <Textarea name="openingLine" defaultValue={content.openingLine} rows={2} />
+      </Labeled>
+
+      <ParagraphsEditor
+        label="Parágrafos"
+        paragraphs={paragraphs}
+        onChange={setParagraphs}
+      />
+
+      <Labeled label="Foto — URL (opcional, para o futuro)">
+        <Input
+          name="photoUrl"
+          defaultValue={content.photoUrl}
+          placeholder="https://..."
+        />
+      </Labeled>
+
+      <StatusBar state={state} pending={pending} />
+    </form>
+  );
+}
+
+// ─── Quem é a Filmar ─────────────────────────────────────────────
+
+export function StudioForm({ content }: { content: StudioContent }) {
+  const [state, formAction, pending] = useActionState(
+    saveSiteContent,
+    initialState,
+  );
+  const [paragraphs, setParagraphs] = useState<string[]>(content.paragraphs);
+  const [pillars, setPillars] = useState<IconItem[]>(content.pillars);
+
+  return (
+    <form action={formAction} className="space-y-4">
+      <input type="hidden" name="key" value="studio" />
+      <input
+        type="hidden"
+        name="paragraphs"
+        value={JSON.stringify(paragraphs)}
+      />
       <input type="hidden" name="pillars" value={JSON.stringify(pillars)} />
 
       <div className="grid gap-4 sm:grid-cols-[12rem_1fr]">
-        <Labeled label="Eyebrow (texto pequeno)">
-          <Input name="eyebrow" defaultValue={content.eyebrow} />
-        </Labeled>
         <Labeled label="Título">
           <Input name="title" defaultValue={content.title} required />
         </Labeled>
+        <Labeled label="Frase (tagline)">
+          <Input name="tagline" defaultValue={content.tagline} />
+        </Labeled>
       </div>
 
-      <Labeled label="Parágrafo 1">
-        <Textarea name="paragraph1" defaultValue={content.paragraph1} />
-      </Labeled>
-      <Labeled label="Parágrafo 2">
-        <Textarea name="paragraph2" defaultValue={content.paragraph2} />
-      </Labeled>
+      <ParagraphsEditor
+        label="Parágrafos"
+        paragraphs={paragraphs}
+        onChange={setParagraphs}
+      />
 
       <IconListEditor
         label="Pilares"
@@ -177,7 +238,7 @@ export function AboutForm({ content }: { content: AboutContent }) {
   );
 }
 
-// ─── Services ────────────────────────────────────────────────────
+// ─── Serviços ────────────────────────────────────────────────────
 
 export function ServicesForm({ content }: { content: ServicesContent }) {
   const [state, formAction, pending] = useActionState(
@@ -205,10 +266,10 @@ export function ServicesForm({ content }: { content: ServicesContent }) {
       </Labeled>
 
       <IconListEditor
-        label="Serviços"
+        label="Categorias"
         items={items}
         onChange={setItems}
-        addLabel="Adicionar serviço"
+        addLabel="Adicionar categoria"
       />
 
       <StatusBar state={state} pending={pending} />
@@ -216,7 +277,99 @@ export function ServicesForm({ content }: { content: ServicesContent }) {
   );
 }
 
-// ─── Contact ─────────────────────────────────────────────────────
+// ─── Portfólio (cabeçalho) ───────────────────────────────────────
+
+export function PortfolioForm({ content }: { content: PortfolioContent }) {
+  const [state, formAction, pending] = useActionState(
+    saveSiteContent,
+    initialState,
+  );
+
+  return (
+    <form action={formAction} className="space-y-4">
+      <input type="hidden" name="key" value="portfolio" />
+
+      <Labeled label="Título">
+        <Input name="title" defaultValue={content.title} required />
+      </Labeled>
+
+      <Labeled label="Descrição">
+        <Textarea name="description" defaultValue={content.description} rows={2} />
+      </Labeled>
+
+      <p className="text-sm text-mist-500">
+        Os projetos (vídeos, thumbnails e categorias) são gerenciados na seção
+        “Projetos” abaixo.
+      </p>
+
+      <StatusBar state={state} pending={pending} />
+    </form>
+  );
+}
+
+// ─── Processo ────────────────────────────────────────────────────
+
+export function ProcessForm({ content }: { content: ProcessContent }) {
+  const [state, formAction, pending] = useActionState(
+    saveSiteContent,
+    initialState,
+  );
+  const [steps, setSteps] = useState<ProcessStep[]>(content.steps);
+
+  return (
+    <form action={formAction} className="space-y-4">
+      <input type="hidden" name="key" value="process" />
+      <input type="hidden" name="steps" value={JSON.stringify(steps)} />
+
+      <Labeled label="Título">
+        <Input name="title" defaultValue={content.title} required />
+      </Labeled>
+
+      <Labeled label="Descrição">
+        <Textarea name="description" defaultValue={content.description} />
+      </Labeled>
+
+      <StepsEditor steps={steps} onChange={setSteps} />
+
+      <StatusBar state={state} pending={pending} />
+    </form>
+  );
+}
+
+// ─── O que acreditamos ───────────────────────────────────────────
+
+export function BeliefsForm({ content }: { content: BeliefsContent }) {
+  const [state, formAction, pending] = useActionState(
+    saveSiteContent,
+    initialState,
+  );
+  const [paragraphs, setParagraphs] = useState<string[]>(content.paragraphs);
+
+  return (
+    <form action={formAction} className="space-y-4">
+      <input type="hidden" name="key" value="beliefs" />
+      <input
+        type="hidden"
+        name="paragraphs"
+        value={JSON.stringify(paragraphs)}
+      />
+
+      <Labeled label="Título">
+        <Input name="title" defaultValue={content.title} required />
+      </Labeled>
+
+      <ParagraphsEditor
+        label="Parágrafos"
+        paragraphs={paragraphs}
+        onChange={setParagraphs}
+      />
+
+      <StatusBar state={state} pending={pending} />
+    </form>
+  );
+}
+
+// ─── Contato ─────────────────────────────────────────────────────
 
 export function ContactForm({ content }: { content: ContactContent }) {
   const [state, formAction, pending] = useActionState(
@@ -237,9 +390,14 @@ export function ContactForm({ content }: { content: ContactContent }) {
         </Labeled>
       </div>
 
-      <Labeled label="Parágrafo">
-        <Textarea name="paragraph" defaultValue={content.paragraph} />
-      </Labeled>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Labeled label="Texto">
+          <Input name="paragraph" defaultValue={content.paragraph} />
+        </Labeled>
+        <Labeled label="Botão (CTA)">
+          <Input name="cta" defaultValue={content.cta} required />
+        </Labeled>
+      </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Labeled label="E-mail">

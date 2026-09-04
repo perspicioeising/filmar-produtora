@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 
 const initialState: ContactState = { status: "idle" };
 
-export function ContactForm() {
+export function ContactForm({ submitLabel = "Enviar mensagem" }: { submitLabel?: string }) {
   const [state, formAction, pending] = useActionState(
     submitContact,
     initialState,
@@ -110,7 +110,7 @@ export function ContactForm() {
           ) : (
             <>
               <Send size={18} />
-              Enviar mensagem
+              {submitLabel}
             </>
           )}
         </Button>

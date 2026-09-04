@@ -32,27 +32,38 @@ const iconItemSchema = z.object({
   text: z.string().trim().default(""),
 });
 
-const metricSchema = z.object({
-  value: z.string().trim().min(1, "O valor da métrica é obrigatório."),
-  label: z.string().trim().min(1, "O rótulo da métrica é obrigatório."),
+/** Lista de parágrafos: descarta strings vazias após trim. */
+const paragraphsSchema = z
+  .array(z.string())
+  .transform((arr) => arr.map((p) => p.trim()).filter((p) => p.length > 0));
+
+const processStepSchema = z.object({
+  title: z.string().trim().min(1, "O título da etapa é obrigatório."),
+  text: z.string().trim().default(""),
 });
 
 const heroSchema = z.object({
-  badge: z.string().trim().default(""),
-  titlePrefix: z.string().trim().default(""),
-  titleHighlight: z.string().trim().default(""),
-  titleSuffix: z.string().trim().default(""),
-  paragraph: z.string().trim().default(""),
-  primaryCta: z.string().trim().min(1, "O texto do botão é obrigatório."),
-  secondaryCta: z.string().trim().min(1, "O texto do botão é obrigatório."),
-  metrics: z.array(metricSchema),
+  title: z.string().trim().min(1, "O título é obrigatório."),
+  description: z.string().trim().default(""),
+  cta: z.string().trim().min(1, "O texto do botão é obrigatório."),
+  mediaUrl: z.string().trim().default(""),
+});
+
+const transitionSchema = z.object({
+  text: z.string().trim().min(1, "O texto é obrigatório."),
 });
 
 const aboutSchema = z.object({
-  eyebrow: z.string().trim().default(""),
   title: z.string().trim().min(1, "O título é obrigatório."),
-  paragraph1: z.string().trim().default(""),
-  paragraph2: z.string().trim().default(""),
+  openingLine: z.string().trim().default(""),
+  paragraphs: paragraphsSchema,
+  photoUrl: z.string().trim().default(""),
+});
+
+const studioSchema = z.object({
+  title: z.string().trim().min(1, "O título é obrigatório."),
+  tagline: z.string().trim().default(""),
+  paragraphs: paragraphsSchema,
   pillars: z.array(iconItemSchema),
 });
 
@@ -63,10 +74,27 @@ const servicesSchema = z.object({
   items: z.array(iconItemSchema),
 });
 
+const portfolioSchema = z.object({
+  title: z.string().trim().min(1, "O título é obrigatório."),
+  description: z.string().trim().default(""),
+});
+
+const processSchema = z.object({
+  title: z.string().trim().min(1, "O título é obrigatório."),
+  description: z.string().trim().default(""),
+  steps: z.array(processStepSchema),
+});
+
+const beliefsSchema = z.object({
+  title: z.string().trim().min(1, "O título é obrigatório."),
+  paragraphs: paragraphsSchema,
+});
+
 const contactSchema = z.object({
   eyebrow: z.string().trim().default(""),
   title: z.string().trim().min(1, "O título é obrigatório."),
   paragraph: z.string().trim().default(""),
+  cta: z.string().trim().min(1, "O texto do botão é obrigatório."),
   email: z.string().trim().email("E-mail inválido."),
   phone: z.string().trim().default(""),
   whatsapp: z.string().trim().default(""),
@@ -79,8 +107,13 @@ const contactSchema = z.object({
 
 const sectionSchemas = {
   hero: heroSchema,
+  transition: transitionSchema,
   about: aboutSchema,
+  studio: studioSchema,
   services: servicesSchema,
+  portfolio: portfolioSchema,
+  process: processSchema,
+  beliefs: beliefsSchema,
   contact: contactSchema,
 } as const;
 
@@ -89,11 +122,13 @@ const VALID_KEYS = Object.keys(sectionSchemas) as SiteContentKey[];
 /**
  * Monta o objeto da seção a partir do FormData.
  *
- * Campos simples vêm como pares nome/valor. As listas (metrics, pillars,
- * items) são enviadas como um único campo JSON serializado pelo cliente
- * (ex.: name="metrics" com JSON.stringify do array), o que evita problemas
- * de indexação e ordem no FormData.
+ * Campos simples vêm como pares nome/valor. As listas (pillars, items,
+ * steps, paragraphs) são enviadas como um único campo JSON serializado pelo
+ * cliente (ex.: name="steps" com JSON.stringify do array), o que evita
+ * problemas de indexação e ordem no FormData.
  */
+const LIST_FIELDS = ["pillars", "items", "steps", "paragraphs"];
+
 function buildSectionData(
   key: SiteContentKey,
   formData: FormData,
@@ -105,7 +140,7 @@ function buildSectionData(
     if (typeof value !== "string") continue;
 
     // Campos de lista chegam serializados em JSON.
-    if (["metrics", "pillars", "items"].includes(name)) {
+    if (LIST_FIELDS.includes(name)) {
       try {
         raw[name] = JSON.parse(value);
       } catch {

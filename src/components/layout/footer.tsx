@@ -108,7 +108,7 @@ export function Footer({ content }: { content: ContactContent }) {
           <p>
             © {year} {siteConfig.name}. Todos os direitos reservados.
           </p>
-          <p>Feito com dedicação ao audiovisual.</p>
+          <p>Direção e produção audiovisual.</p>
         </div>
       </div>
     </footer>

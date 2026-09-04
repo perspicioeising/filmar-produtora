@@ -8,15 +8,16 @@
  */
 
 export const siteConfig = {
-  name: "Filmar Produtora",
+  name: "Filmar",
   shortName: "Filmar",
-  tagline: "Histórias em movimento",
+  tagline: "Direção e produção audiovisual",
 };
 
 export const navLinks = [
-  { label: "Início", href: "#hero" },
   { label: "Sobre", href: "#sobre" },
+  { label: "Estúdio", href: "#estudio" },
   { label: "Serviços", href: "#servicos" },
-  { label: "Portfólio", href: "#portfolio" },
+  { label: "Trabalhos", href: "#portfolio" },
+  { label: "Processo", href: "#processo" },
   { label: "Contato", href: "#contato" },
 ] as const;
