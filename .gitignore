@@ -30,10 +30,11 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (segredos NUNCA vão para o git; .env.example é versionado como referência)
+# env files (segredos NUNCA vão para o git)
 .env
 .env.local
 .env.*.local
+.env.example
 
 # vercel
 .vercel
