@@ -93,11 +93,12 @@ export function Footer({ content }: { content: ContactContent }) {
       </div>
 
       <div className="border-t border-mist-100/10">
-        <div className="container-x flex flex-col gap-2 py-6 text-xs text-mist-500 sm:flex-row sm:items-center sm:justify-between">
+        {/* sm:pr-44 reserva o espaço do botão flutuante do WhatsApp */}
+        <div className="container-x flex flex-col gap-2 py-6 text-xs text-mist-500 sm:flex-row sm:items-center sm:justify-between sm:pr-44">
           <p>
             © {year} {siteConfig.name}. Todos os direitos reservados.
           </p>
-          <p className="flex items-center gap-4">
+          <p className="flex flex-wrap items-center gap-x-4">
             <span>{siteConfig.tagline}</span>
             <Link
               href="/admin"
