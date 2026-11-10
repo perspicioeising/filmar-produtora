@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { logout } from "@/lib/actions/auth";
 import { getLeads } from "@/lib/data/leads";
+import { cookies } from "next/headers";
 import { AdminShell } from "@/components/admin/admin-shell";
 
 export const metadata: Metadata = {
@@ -24,8 +25,14 @@ export default async function AdminLayout({
   const leads = await getLeads();
   const unread = leads.filter((l) => l.status === "new").length;
 
+  // Tema salvo em cookie: o servidor já renderiza no tema certo (sem piscar).
+  const cookieStore = await cookies();
+  const theme =
+    cookieStore.get("admin-theme")?.value === "light" ? "light" : "dark";
+
   return (
     <AdminShell
+      initialTheme={theme}
       email={user.email ?? ""}
       unread={unread}
       logoutAction={logout}

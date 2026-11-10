@@ -204,6 +204,34 @@
   background: var(--color-mist-500);
 }
 
+/*
+  Tema claro do painel admin.
+  Os componentes usam os tokens ink-* (fundos/bordas) e mist-* (textos);
+  aqui eles são reapontados só dentro do painel, então nada precisa ser
+  reescrito. O azul da marca escurece para manter contraste sobre branco.
+*/
+[data-admin-theme="light"] {
+  color-scheme: light;
+
+  --color-ink-950: #f3f5f8;
+  --color-ink-900: #ffffff;
+  --color-ink-850: #f8f9fb;
+  --color-ink-800: #edf0f4;
+  --color-ink-700: #dce1e9;
+  --color-ink-600: #c3cad6;
+
+  --color-mist-100: #0b0b0d;
+  --color-mist-300: #34343c;
+  --color-mist-400: #54545f;
+  --color-mist-500: #717180;
+
+  --color-sky-glow: #2b6aa3;
+  --color-sky-bright: #3a7db8;
+
+  --color-red-400: #dc2626;
+  --color-emerald-400: #047857;
+}
+
 /* Esconde a scrollbar em carrosséis horizontais (chips de filtro) */
 @utility no-scrollbar {
   -ms-overflow-style: none;

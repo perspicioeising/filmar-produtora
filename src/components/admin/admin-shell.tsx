@@ -8,14 +8,19 @@ import {
   LogOut,
   Menu,
   PanelLeftClose,
+  Moon,
   PanelLeftOpen,
+  Sun,
   X,
 } from "lucide-react";
 import { Logo } from "@/components/ui/logo";
 import { cn } from "@/lib/utils";
 import { SidebarNav } from "./admin-nav";
 
+type Theme = "dark" | "light";
+
 type Props = {
+  initialTheme: Theme;
   email: string;
   unread: number;
   logoutAction: () => void | Promise<void>;
@@ -28,9 +33,25 @@ const STORAGE_KEY = "filmar-admin-sidebar-collapsed";
  * Casca do painel: sidebar recolhível no desktop (lembra a escolha) e
  * gaveta deslizante no celular, aberta pelo botão de menu.
  */
-export function AdminShell({ email, unread, logoutAction, children }: Props) {
+export function AdminShell({
+  initialTheme,
+  email,
+  unread,
+  logoutAction,
+  children,
+}: Props) {
   const pathname = usePathname();
+  const [theme, setTheme] = useState<Theme>(initialTheme);
   const [collapsed, setCollapsed] = useState(false);
+
+  function toggleTheme() {
+    const next: Theme = theme === "dark" ? "light" : "dark";
+    setTheme(next);
+    document.cookie = `admin-theme=${next}; path=/; max-age=31536000; samesite=lax`;
+  }
+
+  const isLight = theme === "light";
+  const themeLabel = isLight ? "Tema escuro" : "Tema claro";
   const [drawerPath, setDrawerPath] = useState<string | null>(null);
 
   // A gaveta só vale para a rota em que foi aberta: navegar a fecha sozinha.
@@ -79,6 +100,23 @@ export function AdminShell({ email, unread, logoutAction, children }: Props) {
         <ExternalLink size={18} className="shrink-0" />
         {!compact && "Ver site"}
       </Link>
+      <button
+        type="button"
+        onClick={toggleTheme}
+        title={themeLabel}
+        aria-label={`Mudar para ${themeLabel.toLowerCase()}`}
+        className={cn(
+          "flex h-11 w-full items-center rounded-xl text-sm text-mist-400 transition-colors hover:bg-ink-800 hover:text-mist-100",
+          compact ? "justify-center" : "gap-3 px-3",
+        )}
+      >
+        {isLight ? (
+          <Moon size={18} className="shrink-0" />
+        ) : (
+          <Sun size={18} className="shrink-0" />
+        )}
+        {!compact && themeLabel}
+      </button>
       <form action={logoutAction}>
         <button
           type="submit"
@@ -100,7 +138,10 @@ export function AdminShell({ email, unread, logoutAction, children }: Props) {
   );
 
   return (
-    <div className="flex min-h-screen">
+    <div
+      data-admin-theme={theme}
+      className="flex min-h-screen bg-ink-950 text-mist-100"
+    >
       {/* Sidebar (desktop) */}
       <aside
         className={cn(
@@ -198,7 +239,14 @@ export function AdminShell({ email, unread, logoutAction, children }: Props) {
           <Link href="/admin" aria-label="Início do painel">
             <Logo size="sm" showTagline={false} />
           </Link>
-          <span className="w-11" aria-hidden />
+          <button
+            type="button"
+            onClick={toggleTheme}
+            aria-label={`Mudar para ${themeLabel.toLowerCase()}`}
+            className="flex h-11 w-11 items-center justify-center rounded-full text-mist-300"
+          >
+            {isLight ? <Moon size={20} /> : <Sun size={20} />}
+          </button>
         </header>
 
         <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-8 pb-28 sm:px-8 sm:py-12 lg:pb-12">
