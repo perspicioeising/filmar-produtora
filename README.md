@@ -71,10 +71,11 @@ NEXT_PUBLIC_SITE_URL=http://localhost:3000
 No dashboard do Supabase, abra o **SQL Editor** e rode o conteúdo de
 [`supabase/schema.sql`](./supabase/schema.sql). Ele cria:
 
-- Tabelas `projects` e `leads`
-- Políticas de RLS (leitura pública de projetos, escrita só autenticada; inserção
-  pública de leads, leitura só autenticada)
-- Buckets de Storage `videos` e `thumbnails` (públicos para leitura)
+- Tabelas `projects`, `site_content` e `leads`
+- Políticas de RLS (leitura pública só de projetos publicados, escrita só
+  autenticada; inserção pública de leads, leitura/gestão só autenticada)
+- Bucket de Storage `media` (público para leitura; pastas `videos/`,
+  `thumbnails/` e `site/`)
 
 ### 4. Criar o usuário admin
 

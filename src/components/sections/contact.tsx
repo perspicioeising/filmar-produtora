@@ -1,56 +1,68 @@
-import { Mail, Phone, MapPin, MessageCircle } from "lucide-react";
+import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import { Reveal } from "@/components/ui/reveal";
 import { ContactForm } from "./contact-form";
 import type { ContactContent } from "@/lib/supabase/types";
 
 export function Contact({ content }: { content: ContactContent }) {
+  const whatsapp = content.whatsapp.replace(/\D/g, "");
+
   return (
     <section
       id="contato"
-      className="border-t border-ink-800 py-24 sm:py-32 lg:py-40"
+      className="relative overflow-hidden bg-ink-950 py-20 sm:py-28 lg:py-36"
     >
-      <div className="mx-auto grid max-w-6xl gap-12 px-6 lg:grid-cols-2 lg:gap-16">
-        <Reveal>
-          <p className="text-xs uppercase tracking-[0.3em] text-mist-500">
-            {content.eyebrow}
-          </p>
-          <h2 className="mt-6 text-4xl leading-tight text-balance text-mist-100 sm:text-5xl lg:text-6xl">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -right-40 top-0 h-[32rem] w-[32rem] rounded-full bg-sky-glow/10 blur-3xl"
+      />
+      <div className="container-x relative grid gap-14 lg:grid-cols-12 lg:gap-16">
+        <Reveal className="lg:col-span-5">
+          {content.eyebrow && (
+            <p className="text-xs font-medium uppercase tracking-[0.3em] text-sky-glow">
+              {content.eyebrow}
+            </p>
+          )}
+          <h2 className="mt-5 text-4xl leading-[1.08] text-balance text-mist-100 sm:text-5xl lg:text-6xl">
             {content.title}
           </h2>
-          <p className="mt-6 text-xl font-light text-mist-300">
-            {content.paragraph}
-          </p>
+          <p className="mt-5 text-lg text-mist-300">{content.paragraph}</p>
 
-          <ul className="mt-12 space-y-5">
+          <ul className="mt-10 space-y-2">
             <ContactItem
-              icon={<Mail size={18} strokeWidth={1.25} />}
+              icon={<Mail size={18} strokeWidth={1.5} />}
               label="Email"
               value={content.email}
               href={`mailto:${content.email}`}
             />
-            <ContactItem
-              icon={<Phone size={18} strokeWidth={1.25} />}
-              label="Telefone"
-              value={content.phone}
-              href={`tel:${content.phone.replace(/\D/g, "")}`}
-            />
-            <ContactItem
-              icon={<MessageCircle size={18} strokeWidth={1.25} />}
-              label="WhatsApp"
-              value="Enviar mensagem"
-              href={`https://wa.me/${content.whatsapp}`}
-              external
-            />
-            <ContactItem
-              icon={<MapPin size={18} strokeWidth={1.25} />}
-              label="Localização"
-              value={content.location}
-            />
+            {content.phone && (
+              <ContactItem
+                icon={<Phone size={18} strokeWidth={1.5} />}
+                label="Telefone"
+                value={content.phone}
+                href={`tel:${content.phone.replace(/[^\d+]/g, "")}`}
+              />
+            )}
+            {whatsapp && (
+              <ContactItem
+                icon={<MessageCircle size={18} strokeWidth={1.5} />}
+                label="WhatsApp"
+                value="Enviar mensagem"
+                href={`https://wa.me/${whatsapp}`}
+                external
+              />
+            )}
+            {content.location && (
+              <ContactItem
+                icon={<MapPin size={18} strokeWidth={1.5} />}
+                label="Localização"
+                value={content.location}
+              />
+            )}
           </ul>
         </Reveal>
 
-        <Reveal delay={100}>
-          <div className="border-t border-ink-700 pt-8 lg:border-l lg:border-t-0 lg:pl-12 lg:pt-0">
+        <Reveal className="lg:col-span-7" delay={100}>
+          <div className="rounded-3xl border border-mist-100/10 bg-ink-900/70 p-6 backdrop-blur sm:p-10">
             <ContactForm submitLabel={content.cta} />
           </div>
         </Reveal>
@@ -72,35 +84,33 @@ function ContactItem({
   href?: string;
   external?: boolean;
 }) {
-  const content = (
+  const inner = (
     <>
-      <span className="flex h-10 w-10 shrink-0 items-center justify-center border border-ink-700 text-mist-300">
+      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-mist-100/15 text-sky-glow transition-colors group-hover:border-sky-glow">
         {icon}
       </span>
-      <span>
-        <span className="block text-xs uppercase tracking-widest text-mist-500">
+      <span className="min-w-0">
+        <span className="block text-xs uppercase tracking-[0.2em] text-mist-500">
           {label}
         </span>
-        <span className="text-mist-100">{value}</span>
+        <span className="block break-words text-mist-100">{value}</span>
       </span>
     </>
   );
 
-  if (href) {
-    return (
-      <li>
+  return (
+    <li>
+      {href ? (
         <a
           href={href}
-          {...(external
-            ? { target: "_blank", rel: "noopener noreferrer" }
-            : {})}
-          className="flex items-center gap-4 transition-colors hover:text-mist-300"
+          {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+          className="group -mx-2 flex items-center gap-4 rounded-xl p-2 transition-colors hover:bg-mist-100/5"
         >
-          {content}
+          {inner}
         </a>
-      </li>
-    );
-  }
-
-  return <li className="flex items-center gap-4">{content}</li>;
+      ) : (
+        <div className="-mx-2 flex items-center gap-4 p-2">{inner}</div>
+      )}
+    </li>
+  );
 }

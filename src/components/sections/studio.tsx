@@ -1,58 +1,56 @@
-import { Reveal } from "@/components/ui/reveal";
-import { resolveIcon } from "@/lib/content/icons";
 import type { StudioContent } from "@/lib/supabase/types";
+import { resolveIcon } from "@/lib/content/icons";
+import { Reveal } from "@/components/ui/reveal";
 
 export function Studio({ content }: { content: StudioContent }) {
   return (
     <section
       id="estudio"
-      className="border-t border-ink-800 py-24 sm:py-32 lg:py-40"
+      className="bg-ink-900 py-20 sm:py-28 lg:py-36"
     >
-      <div className="mx-auto max-w-6xl px-6">
-        <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
-          <div className="lg:col-span-5">
-            <Reveal>
-              <h2 className="text-3xl leading-tight text-balance text-mist-100 sm:text-4xl lg:text-5xl">
-                {content.title}
-              </h2>
-            </Reveal>
-            <Reveal delay={80}>
-              <p className="mt-6 text-xl font-light leading-relaxed text-mist-300">
-                {content.tagline}
-              </p>
-            </Reveal>
-          </div>
+      <div className="container-x">
+        <div className="grid gap-10 lg:grid-cols-12 lg:gap-16">
+          <Reveal className="lg:col-span-6">
+            <p className="text-xs font-medium uppercase tracking-[0.3em] text-sky-glow">
+              {content.title}
+            </p>
+            <h2 className="mt-5 text-3xl leading-[1.12] text-balance text-mist-100 sm:text-5xl">
+              {content.tagline}
+            </h2>
+          </Reveal>
 
-          <div className="space-y-5 lg:col-span-7">
-            {content.paragraphs.map((paragraph, i) => (
-              <Reveal key={i} delay={100 + i * 60}>
-                <p className="font-light leading-relaxed text-mist-400">
-                  {paragraph}
-                </p>
-              </Reveal>
+          <Reveal className="space-y-5 text-base leading-relaxed text-mist-300 sm:text-lg lg:col-span-6" delay={100}>
+            {content.paragraphs.map((p, i) => (
+              <p key={i} className="text-pretty">
+                {p}
+              </p>
             ))}
-          </div>
+          </Reveal>
         </div>
 
-        {/* Três pilares */}
-        <div className="mt-16 grid gap-px overflow-hidden border-t border-ink-800 sm:mt-20 sm:grid-cols-3 sm:border-l">
-          {content.pillars.map((pillar, i) => {
-            const Icon = resolveIcon(pillar.icon);
-            return (
-              <Reveal key={`${pillar.title}-${i}`} delay={i * 100}>
-                <div className="h-full border-b border-ink-800 bg-transparent p-8 sm:border-r">
-                  <Icon size={24} className="text-mist-300" strokeWidth={1.25} />
-                  <h3 className="mt-6 text-lg font-normal text-mist-100">
-                    {pillar.title}
-                  </h3>
-                  <p className="mt-2 text-sm font-light leading-relaxed text-mist-400">
+        {content.pillars.length > 0 && (
+          <ul className="mt-14 grid gap-px overflow-hidden rounded-2xl border border-mist-100/10 bg-mist-100/10 sm:mt-20 md:grid-cols-3">
+            {content.pillars.map((pillar, i) => {
+              const Icon = resolveIcon(pillar.icon);
+              return (
+                <li key={i} className="bg-ink-900 p-7 sm:p-9">
+                  <div className="flex items-center justify-between">
+                    <span className="flex h-12 w-12 items-center justify-center rounded-full bg-sky-glow/10 text-sky-glow">
+                      <Icon size={22} strokeWidth={1.5} />
+                    </span>
+                    <span className="font-display text-sm text-mist-500">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                  </div>
+                  <h3 className="mt-8 text-2xl text-mist-100">{pillar.title}</h3>
+                  <p className="mt-3 text-sm leading-relaxed text-mist-400">
                     {pillar.text}
                   </p>
-                </div>
-              </Reveal>
-            );
-          })}
-        </div>
+                </li>
+              );
+            })}
+          </ul>
+        )}
       </div>
     </section>
   );

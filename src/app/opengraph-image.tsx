@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "Filmar — Direção e produção audiovisual";
+export const alt = "Filmar — Produtora audiovisual";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -15,28 +15,31 @@ export default function Image() {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          background: "#0a0a0a",
+          background: "#050506",
         }}
       >
         <div
           style={{
             display: "flex",
-            fontSize: 150,
-            fontWeight: 500,
-            color: "#f2f1ef",
+            fontSize: 160,
+            fontWeight: 600,
+            color: "#f5f5f4",
             letterSpacing: -4,
           }}
         >
-          Filmar
+          film
+          <span style={{ color: "#7db8e8" }}>ar</span>
         </div>
         <div
           style={{
-            marginTop: 32,
+            marginTop: 24,
             fontSize: 28,
-            color: "#9a9a96",
+            color: "#9c9ca4",
+            letterSpacing: 14,
+            textTransform: "uppercase",
           }}
         >
-          Direção e produção audiovisual
+          Produtora
         </div>
       </div>
     ),

@@ -13,11 +13,14 @@ export const siteConfig = {
   tagline: "Direção e produção audiovisual",
 };
 
+/** Links com "/#" para funcionarem também a partir das páginas de projeto. */
 export const navLinks = [
-  { label: "Sobre", href: "#sobre" },
-  { label: "Estúdio", href: "#estudio" },
-  { label: "Serviços", href: "#servicos" },
-  { label: "Trabalhos", href: "#portfolio" },
-  { label: "Processo", href: "#processo" },
-  { label: "Contato", href: "#contato" },
+  { label: "Trabalhos", href: "/#portfolio" },
+  { label: "Sobre", href: "/#sobre" },
+  { label: "Serviços", href: "/#servicos" },
+  { label: "Processo", href: "/#processo" },
+  { label: "Contato", href: "/#contato" },
 ] as const;
+
+export const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://filmarprodutora.com";

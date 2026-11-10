@@ -1,8 +1,9 @@
+import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 import type { Lead } from "@/lib/supabase/types";
 
 /** Busca os leads (mais recentes primeiro). Requer sessão autenticada (RLS). */
-export async function getLeads(): Promise<Lead[]> {
+export const getLeads = cache(async function getLeads(): Promise<Lead[]> {
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
@@ -19,4 +20,4 @@ export async function getLeads(): Promise<Lead[]> {
     console.error("[getLeads] falha inesperada:", err);
     return [];
   }
-}
+});

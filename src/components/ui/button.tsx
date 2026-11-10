@@ -2,24 +2,32 @@ import * as React from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
-type Variant = "primary" | "outline" | "ghost";
+type Variant = "primary" | "light" | "outline" | "outline-dark" | "ghost" | "danger";
 type Size = "sm" | "md" | "lg";
 
 const base =
-  "inline-flex items-center justify-center gap-2 rounded-full font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-glow focus-visible:ring-offset-2 focus-visible:ring-offset-ink-950 disabled:pointer-events-none disabled:opacity-50";
+  "inline-flex shrink-0 items-center justify-center gap-2 rounded-full font-medium whitespace-nowrap transition-all duration-300 active:scale-[0.97] disabled:pointer-events-none disabled:opacity-50";
 
 const variants: Record<Variant, string> = {
-  primary:
-    "bg-sky-gradient text-ink-950 hover:opacity-90 hover:shadow-lg hover:shadow-sky-glow/20",
+  /** Azul da marca — ação principal */
+  primary: "bg-sky-glow text-ink-950 hover:bg-sky-bright",
+  /** Branco — sobre fundos escuros/azuis */
+  light: "bg-mist-100 text-ink-950 hover:bg-white",
+  /** Contorno — sobre fundos escuros */
   outline:
-    "border border-ink-600 text-mist-100 hover:border-sky-glow hover:text-sky-bright",
-  ghost: "text-mist-300 hover:text-sky-bright",
+    "border border-mist-100/25 text-mist-100 hover:border-mist-100 hover:bg-mist-100/5",
+  /** Contorno — sobre fundos claros/azuis */
+  "outline-dark":
+    "border border-ink-950/30 text-ink-950 hover:border-ink-950 hover:bg-ink-950/5",
+  ghost: "text-mist-300 hover:text-sky-glow",
+  danger:
+    "border border-red-500/40 text-red-400 hover:bg-red-500/10 hover:border-red-400",
 };
 
 const sizes: Record<Size, string> = {
-  sm: "h-9 px-4 text-sm",
-  md: "h-11 px-6 text-sm",
-  lg: "h-13 px-8 text-base",
+  sm: "h-10 px-5 text-sm",
+  md: "h-12 px-7 text-sm",
+  lg: "h-14 px-9 text-base",
 };
 
 type CommonProps = {
@@ -30,17 +38,28 @@ type CommonProps = {
 };
 
 type ButtonAsButton = CommonProps &
-  React.ButtonHTMLAttributes<HTMLButtonElement> & { href?: undefined };
+  Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "className"> & {
+    href?: undefined;
+  };
 
 type ButtonAsLink = CommonProps &
-  Omit<React.ComponentProps<typeof Link>, "className"> & { href: string };
+  Omit<React.ComponentProps<typeof Link>, "className" | "children"> & {
+    href: string;
+  };
 
+/* eslint-disable @typescript-eslint/no-unused-vars -- desestruturação para remover props de estilo do spread */
 export function Button(props: ButtonAsButton | ButtonAsLink) {
   const { variant = "primary", size = "md", className, children } = props;
   const classes = cn(base, variants[variant], sizes[size], className);
 
-  if ("href" in props && props.href) {
-    const { variant: _v, size: _s, className: _c, children: _ch, ...rest } = props;
+  if (props.href !== undefined) {
+    const {
+      variant: _v,
+      size: _s,
+      className: _c,
+      children: _ch,
+      ...rest
+    } = props;
     return (
       <Link className={classes} {...rest}>
         {children}
@@ -54,7 +73,7 @@ export function Button(props: ButtonAsButton | ButtonAsLink) {
     className: _c,
     children: _ch,
     ...rest
-  } = props as ButtonAsButton;
+  } = props;
   return (
     <button className={classes} {...rest}>
       {children}

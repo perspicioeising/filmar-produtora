@@ -1,50 +1,69 @@
-import { Reveal } from "@/components/ui/reveal";
-import { resolveIcon } from "@/lib/content/icons";
 import type { ServicesContent } from "@/lib/supabase/types";
+import { resolveIcon } from "@/lib/content/icons";
+import { Reveal } from "@/components/ui/reveal";
+import { Button } from "@/components/ui/button";
 
 export function Services({ content }: { content: ServicesContent }) {
   return (
     <section
       id="servicos"
-      className="border-t border-ink-800 py-24 sm:py-32 lg:py-40"
+      className="bg-paper py-20 text-ink-950 sm:py-28 lg:py-36"
     >
-      <div className="mx-auto max-w-6xl px-6">
-        <Reveal className="max-w-3xl">
-          <p className="text-xs uppercase tracking-[0.3em] text-mist-500">
-            {content.eyebrow}
-          </p>
-          <h2 className="mt-6 text-3xl leading-tight text-balance text-mist-100 sm:text-4xl lg:text-5xl">
-            {content.title}
-          </h2>
-          <p className="mt-6 max-w-2xl font-light leading-relaxed text-mist-400">
-            {content.paragraph}
-          </p>
+      <div className="container-x grid gap-12 lg:grid-cols-12 lg:gap-16">
+        <Reveal className="lg:col-span-5">
+          <div className="lg:sticky lg:top-28">
+            {content.eyebrow && (
+              <p className="text-xs font-medium uppercase tracking-[0.3em] text-sky-deep">
+                {content.eyebrow}
+              </p>
+            )}
+            <h2 className="mt-5 text-4xl leading-[1.08] text-balance sm:text-5xl">
+              {content.title}
+            </h2>
+            <p className="mt-6 max-w-md text-base leading-relaxed text-ink-700">
+              {content.paragraph}
+            </p>
+            <Button
+              href="/#contato"
+              variant="outline-dark"
+              className="mt-8 hidden lg:inline-flex"
+            >
+              Conversar sobre meu projeto
+            </Button>
+          </div>
         </Reveal>
 
-        <div className="mt-16 grid gap-x-12 gap-y-12 sm:mt-20 sm:grid-cols-2">
-          {content.items.map((service, i) => {
-            const Icon = resolveIcon(service.icon);
+        <ul className="lg:col-span-7">
+          {content.items.map((item, i) => {
+            const Icon = resolveIcon(item.icon);
             return (
-              <Reveal key={`${service.title}-${i}`} delay={i * 80}>
-                <article className="group border-t border-ink-700 pt-6">
-                  <div className="flex items-baseline justify-between gap-4">
-                    <h3 className="text-2xl font-normal text-mist-100 sm:text-3xl">
-                      {service.title}
-                    </h3>
-                    <Icon
-                      size={22}
-                      strokeWidth={1.25}
-                      className="shrink-0 text-mist-500 transition-colors group-hover:text-mist-100"
-                    />
+              <Reveal as="li" key={i} delay={i * 60}>
+                <div className="group -mx-3 flex gap-5 rounded-2xl border-t border-ink-950/10 px-3 py-7 transition-colors duration-300 first:border-t-0 hover:bg-sky-glow/20 sm:gap-7 sm:py-9">
+                  <span className="font-display text-sm text-ink-950/40">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="text-2xl sm:text-3xl">{item.title}</h3>
+                    <p className="mt-3 max-w-xl text-sm leading-relaxed text-ink-700 sm:text-base">
+                      {item.text}
+                    </p>
                   </div>
-                  <p className="mt-4 max-w-md font-light leading-relaxed text-mist-400">
-                    {service.text}
-                  </p>
-                </article>
+                  <span className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-full bg-ink-950 text-sky-glow transition-transform duration-300 group-hover:scale-110 sm:flex">
+                    <Icon size={20} strokeWidth={1.5} />
+                  </span>
+                </div>
               </Reveal>
             );
           })}
-        </div>
+        </ul>
+
+        <Button
+          href="/#contato"
+          variant="outline-dark"
+          className="w-full lg:hidden"
+        >
+          Conversar sobre meu projeto
+        </Button>
       </div>
     </section>
   );

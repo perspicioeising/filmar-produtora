@@ -33,23 +33,22 @@ const host = supabaseHostname();
 
 const nextConfig: NextConfig = {
   images: {
-    remotePatterns: host
-      ? [
-          {
+    remotePatterns: [
+      host
+        ? {
             protocol: "https",
             hostname: host,
             pathname: "/storage/v1/object/public/**",
-          },
-        ]
-      : [
-          // Fallback: qualquer subdomínio supabase.co (usado quando a env
-          // ainda não está definida em build).
-          {
+          }
+        : {
+            // Fallback: qualquer subdomínio supabase.co (env ausente em build).
             protocol: "https",
             hostname: "*.supabase.co",
             pathname: "/storage/v1/object/public/**",
           },
-        ],
+      // Capas automáticas de vídeos do YouTube
+      { protocol: "https", hostname: "i.ytimg.com", pathname: "/vi/**" },
+    ],
   },
 };
 

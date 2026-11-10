@@ -23,6 +23,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { MediaUpload } from "./media-upload";
 import { IconListEditor } from "./icon-list-editor";
 import { ParagraphsEditor } from "./paragraphs-editor";
 import { StepsEditor } from "./steps-editor";
@@ -56,8 +57,8 @@ function StatusBar({
   pending: boolean;
 }) {
   return (
-    <div className="flex items-center gap-4">
-      <Button type="submit" disabled={pending}>
+    <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:items-center sm:gap-4">
+      <Button type="submit" disabled={pending} className="w-full sm:w-auto">
         {pending ? (
           <>
             <Loader2 size={16} className="animate-spin" />
@@ -99,26 +100,31 @@ export function HeroForm({ content }: { content: HeroContent }) {
     <form action={formAction} className="space-y-4">
       <input type="hidden" name="key" value="hero" />
 
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Labeled label="Texto pequeno acima do título">
+          <Input name="eyebrow" defaultValue={content.eyebrow} />
+        </Labeled>
+        <Labeled label="Texto do botão principal">
+          <Input name="cta" defaultValue={content.cta} required />
+        </Labeled>
+      </div>
+
       <Labeled label="Título">
-        <Textarea name="title" defaultValue={content.title} required />
+        <Textarea name="title" defaultValue={content.title} required rows={3} />
       </Labeled>
 
       <Labeled label="Descrição">
-        <Textarea name="description" defaultValue={content.description} />
+        <Textarea name="description" defaultValue={content.description} rows={2} />
       </Labeled>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Labeled label="Botão (CTA)">
-          <Input name="cta" defaultValue={content.cta} required />
-        </Labeled>
-        <Labeled label="Mídia de fundo — URL (imagem ou vídeo, opcional)">
-          <Input
-            name="mediaUrl"
-            defaultValue={content.mediaUrl}
-            placeholder="https://... .mp4 ou .jpg"
-          />
-        </Labeled>
-      </div>
+      <MediaUpload
+        name="mediaUrl"
+        label="Fundo do topo (imagem ou vídeo curto, opcional)"
+        kind="media"
+        folder="site"
+        defaultValue={content.mediaUrl}
+        hint="Vídeos de até 15–20 segundos, sem som, funcionam melhor. Sem mídia, o site mostra um fundo azul suave."
+      />
 
       <StatusBar state={state} pending={pending} />
     </form>
@@ -178,13 +184,14 @@ export function AboutForm({ content }: { content: AboutContent }) {
         onChange={setParagraphs}
       />
 
-      <Labeled label="Foto — URL (opcional, para o futuro)">
-        <Input
-          name="photoUrl"
-          defaultValue={content.photoUrl}
-          placeholder="https://..."
-        />
-      </Labeled>
+      <MediaUpload
+        name="photoUrl"
+        label="Foto (opcional)"
+        kind="image"
+        folder="site"
+        defaultValue={content.photoUrl}
+        hint="Retrato vertical (4:5) fica melhor."
+      />
 
       <StatusBar state={state} pending={pending} />
     </form>
@@ -298,8 +305,8 @@ export function PortfolioForm({ content }: { content: PortfolioContent }) {
       </Labeled>
 
       <p className="text-sm text-mist-500">
-        Os projetos (vídeos, thumbnails e categorias) são gerenciados na seção
-        “Projetos” abaixo.
+        Os projetos (vídeos, capas e categorias) são gerenciados na aba
+        “Projetos”.
       </p>
 
       <StatusBar state={state} pending={pending} />

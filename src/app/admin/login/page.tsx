@@ -13,10 +13,15 @@ export default function LoginPage() {
   const [state, formAction, pending] = useActionState(login, initialState);
 
   return (
-    <main className="flex min-h-screen items-center justify-center px-6">
-      <div className="w-full max-w-sm">
+    <main className="relative flex min-h-svh items-center justify-center overflow-hidden px-5 py-10">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute left-1/2 top-0 h-96 w-96 -translate-x-1/2 rounded-full bg-sky-glow/15 blur-3xl"
+      />
+
+      <div className="relative w-full max-w-sm">
         <div className="mb-8 flex flex-col items-center gap-4 text-center">
-          <Logo size="md" />
+          <Logo size="lg" />
           <div className="flex items-center gap-2 text-sm text-mist-400">
             <Lock size={14} className="text-sky-glow" />
             Painel administrativo
@@ -25,13 +30,10 @@ export default function LoginPage() {
 
         <form
           action={formAction}
-          className="space-y-4 rounded-2xl border border-ink-700 bg-ink-850/50 p-6"
+          className="space-y-5 rounded-3xl border border-ink-700 bg-ink-900/80 p-6 backdrop-blur sm:p-8"
         >
           <div>
-            <label
-              htmlFor="email"
-              className="mb-1.5 block text-sm font-medium text-mist-300"
-            >
+            <label htmlFor="email" className="mb-2 block text-sm text-mist-300">
               Email
             </label>
             <Input
@@ -39,16 +41,14 @@ export default function LoginPage() {
               name="email"
               type="email"
               autoComplete="email"
+              inputMode="email"
               required
-              placeholder="admin@filmarprodutora.com"
+              placeholder="voce@email.com"
             />
           </div>
 
           <div>
-            <label
-              htmlFor="password"
-              className="mb-1.5 block text-sm font-medium text-mist-300"
-            >
+            <label htmlFor="password" className="mb-2 block text-sm text-mist-300">
               Senha
             </label>
             <Input
@@ -62,11 +62,8 @@ export default function LoginPage() {
           </div>
 
           {state.error && (
-            <p
-              role="alert"
-              className="flex items-center gap-2 text-sm text-red-400"
-            >
-              <AlertCircle size={16} />
+            <p role="alert" className="flex items-center gap-2 text-sm text-red-400">
+              <AlertCircle size={16} className="shrink-0" />
               {state.error}
             </p>
           )}

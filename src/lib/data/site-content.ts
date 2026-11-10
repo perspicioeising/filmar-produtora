@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { defaultSiteContent } from "@/lib/content/defaults";
 import type {
@@ -46,7 +47,7 @@ function mergeSiteContent(rows: SiteContentRow[]): SiteContent {
  * (Supabase não configurado, tabela vazia, etc.) retorna os defaults,
  * garantindo que a landing page sempre renderize.
  */
-export async function getSiteContent(): Promise<SiteContent> {
+export const getSiteContent = cache(async function getSiteContent(): Promise<SiteContent> {
   try {
     const supabase = await createClient();
     const { data, error } = await supabase.from("site_content").select("*");
@@ -61,4 +62,4 @@ export async function getSiteContent(): Promise<SiteContent> {
     console.error("[getSiteContent] falha inesperada:", err);
     return defaultSiteContent;
   }
-}
+});

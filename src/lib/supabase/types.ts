@@ -1,17 +1,26 @@
-/** Tipos do banco de dados Supabase (tabelas projects e leads). */
+/** Tipos do banco de dados Supabase (projects, leads e site_content). */
 
 export type Project = {
   id: string;
+  slug: string;
   title: string;
   description: string | null;
   category: string | null;
   client: string | null;
+  /** Função exercida no projeto (ex.: "Direção e montagem"). */
+  role: string | null;
+  year: number | null;
+  /** Arquivo no Storage OU link do YouTube/Vimeo. */
   video_url: string | null;
   thumbnail_url: string | null;
   featured: boolean;
+  published: boolean;
   sort_order: number;
   created_at: string;
+  updated_at: string;
 };
+
+export type LeadStatus = "new" | "read" | "archived";
 
 export type Lead = {
   id: string;
@@ -19,12 +28,13 @@ export type Lead = {
   email: string;
   phone: string | null;
   message: string;
+  status: LeadStatus;
   created_at: string;
 };
 
-// ─── Conteúdo editável da landing (tabela site_content) ──────────
+// ─── Conteúdo editável do site (tabela site_content) ─────────────
 
-/** Item de lista com ícone selecionável (pilares do "Sobre", serviços). */
+/** Item de lista com ícone selecionável (pilares do estúdio, serviços). */
 export type IconItem = {
   icon: string;
   title: string;
@@ -32,10 +42,12 @@ export type IconItem = {
 };
 
 export type HeroContent = {
+  /** Texto pequeno acima do título. */
+  eyebrow: string;
   title: string;
   description: string;
   cta: string;
-  /** URL opcional de imagem/vídeo de fundo (mídia cinematográfica). */
+  /** URL opcional de imagem/vídeo de fundo. */
   mediaUrl: string;
 };
 
@@ -43,7 +55,6 @@ export type TransitionContent = {
   text: string;
 };
 
-/** "Sobre mim" (Andressa). Foto é opcional — slot para o futuro. */
 export type AboutContent = {
   title: string;
   openingLine: string;
@@ -52,7 +63,6 @@ export type AboutContent = {
   photoUrl: string;
 };
 
-/** "Quem é a Filmar" — apresentação do estúdio + 3 pilares. */
 export type StudioContent = {
   title: string;
   tagline: string;
@@ -67,13 +77,11 @@ export type ServicesContent = {
   items: IconItem[];
 };
 
-/** Cabeçalho editável da seção de portfólio. */
 export type PortfolioContent = {
   title: string;
   description: string;
 };
 
-/** Etapa numerada do processo (sem ícone). */
 export type ProcessStep = {
   title: string;
   text: string;
@@ -85,7 +93,6 @@ export type ProcessContent = {
   steps: ProcessStep[];
 };
 
-/** "O que acreditamos" — momento editorial. */
 export type BeliefsContent = {
   title: string;
   paragraphs: string[];
@@ -103,7 +110,7 @@ export type ContactContent = {
   instagram: string;
   youtube: string;
   vimeo: string;
-  /** Descrição usada no footer/SEO. */
+  /** Descrição usada no rodapé e SEO. */
   description: string;
 };
 
@@ -120,31 +127,31 @@ export type SiteContent = {
   contact: ContactContent;
 };
 
-/** Chaves válidas de seção (uma linha por chave em site_content). */
 export type SiteContentKey = keyof SiteContent;
 
-/** Linha da tabela site_content. */
 export type SiteContentRow = {
   key: string;
   data: Record<string, unknown>;
   updated_at: string;
 };
 
-/** Campos editáveis de um projeto (sem colunas geradas). */
-export type ProjectInput = Omit<Project, "id" | "created_at">;
+/** Campos editáveis de um projeto (sem colunas geradas pelo banco). */
+export type ProjectInput = Omit<Project, "id" | "created_at" | "updated_at">;
 
 export type Database = {
   public: {
     Tables: {
       projects: {
         Row: Project;
-        Insert: Partial<ProjectInput> & { title: string };
+        Insert: Partial<ProjectInput> & { title: string; slug: string };
         Update: Partial<ProjectInput>;
         Relationships: [];
       };
       leads: {
         Row: Lead;
-        Insert: Omit<Lead, "id" | "created_at">;
+        Insert: Omit<Lead, "id" | "created_at" | "status"> & {
+          status?: LeadStatus;
+        };
         Update: Partial<Omit<Lead, "id" | "created_at">>;
         Relationships: [];
       };

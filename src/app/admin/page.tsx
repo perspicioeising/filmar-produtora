@@ -1,73 +1,147 @@
-import { Mail, Phone } from "lucide-react";
-import { getProjects } from "@/lib/data/projects";
+import Link from "next/link";
+import { ArrowUpRight, Clapperboard, Inbox, PenLine, Plus } from "lucide-react";
+import { getAllProjects } from "@/lib/data/projects";
 import { getLeads } from "@/lib/data/leads";
-import { getSiteContent } from "@/lib/data/site-content";
-import { ProjectsManager } from "@/components/admin/projects-manager";
-import { ContentManager } from "@/components/admin/content-manager";
+import { PageHeader } from "@/components/admin/page-header";
+import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminPage() {
-  const [projects, leads, content] = await Promise.all([
-    getProjects(),
-    getLeads(),
-    getSiteContent(),
-  ]);
+export default async function AdminHome() {
+  const [projects, leads] = await Promise.all([getAllProjects(), getLeads()]);
+
+  const published = projects.filter((p) => p.published).length;
+  const drafts = projects.length - published;
+  const unread = leads.filter((l) => l.status === "new").length;
+  const latest = leads.filter((l) => l.status !== "archived").slice(0, 4);
+
+  const stats = [
+    { label: "Projetos no ar", value: published, href: "/admin/projetos" },
+    { label: "Rascunhos", value: drafts, href: "/admin/projetos" },
+    { label: "Mensagens novas", value: unread, href: "/admin/mensagens" },
+  ];
 
   return (
-    <div className="space-y-14">
-      <ContentManager content={content} />
+    <>
+      <PageHeader
+        title="Olá 👋"
+        description="Resumo do que está acontecendo no site."
+        action={
+          <Button href="/admin/projetos/novo">
+            <Plus size={16} />
+            Novo projeto
+          </Button>
+        }
+      />
 
-      <ProjectsManager projects={projects} />
-
-      <section>
-        <h2 className="font-display text-2xl font-semibold text-mist-100">
-          Leads
-          <span className="ml-2 text-sm font-normal text-mist-500">
-            ({leads.length})
-          </span>
-        </h2>
-
-        <div className="mt-5 space-y-3">
-          {leads.length === 0 ? (
-            <p className="rounded-xl border border-dashed border-ink-600 bg-ink-850/40 px-4 py-10 text-center text-sm text-mist-400">
-              Nenhum contato recebido ainda.
+      <div className="grid grid-cols-3 gap-3 sm:gap-4">
+        {stats.map((s) => (
+          <Link
+            key={s.label}
+            href={s.href}
+            className="rounded-2xl border border-ink-700 bg-ink-900/60 p-4 transition-colors hover:border-sky-glow/50 sm:p-6"
+          >
+            <p className="font-display text-4xl text-mist-100 sm:text-5xl">
+              {s.value}
             </p>
-          ) : (
-            leads.map((lead) => (
-              <div
-                key={lead.id}
-                className="rounded-xl border border-ink-700 bg-ink-850/50 p-4"
-              >
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <h3 className="font-medium text-mist-100">{lead.name}</h3>
-                  <time className="text-xs text-mist-500">
-                    {new Date(lead.created_at).toLocaleString("pt-BR")}
-                  </time>
-                </div>
-                <div className="mt-1 flex flex-wrap gap-4 text-sm text-mist-400">
-                  <a
-                    href={`mailto:${lead.email}`}
-                    className="flex items-center gap-1.5 hover:text-sky-bright"
-                  >
-                    <Mail size={14} />
-                    {lead.email}
-                  </a>
-                  {lead.phone && (
-                    <span className="flex items-center gap-1.5">
-                      <Phone size={14} />
-                      {lead.phone}
-                    </span>
-                  )}
-                </div>
-                <p className="mt-2 whitespace-pre-wrap text-sm text-mist-300">
-                  {lead.message}
-                </p>
-              </div>
-            ))
-          )}
+            <p className="mt-2 text-xs text-mist-500 sm:text-sm">{s.label}</p>
+          </Link>
+        ))}
+      </div>
+
+      <div className="mt-6 grid gap-3 sm:grid-cols-2">
+        <Shortcut
+          href="/admin/projetos"
+          Icon={Clapperboard}
+          title="Gerenciar projetos"
+          text="Adicionar vídeos, editar capas e ordem."
+        />
+        <Shortcut
+          href="/admin/conteudo"
+          Icon={PenLine}
+          title="Editar textos do site"
+          text="Títulos, sobre, serviços e contatos."
+        />
+      </div>
+
+      <section className="mt-12">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-2xl text-mist-100">Últimas mensagens</h2>
+          <Link
+            href="/admin/mensagens"
+            className="text-sm text-sky-glow hover:underline"
+          >
+            Ver todas
+          </Link>
         </div>
+
+        {latest.length === 0 ? (
+          <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-ink-600 px-4 py-12 text-center">
+            <Inbox size={24} className="text-mist-500" />
+            <p className="text-sm text-mist-400">Nenhuma mensagem por enquanto.</p>
+          </div>
+        ) : (
+          <ul className="divide-y divide-ink-700 overflow-hidden rounded-2xl border border-ink-700 bg-ink-900/60">
+            {latest.map((lead) => (
+              <li key={lead.id}>
+                <Link
+                  href="/admin/mensagens"
+                  className="flex items-start gap-3 p-4 transition-colors hover:bg-ink-800/60"
+                >
+                  <span
+                    aria-label={lead.status === "new" ? "Nova" : "Lida"}
+                    className={`mt-2 h-2 w-2 shrink-0 rounded-full ${lead.status === "new" ? "bg-sky-glow" : "bg-ink-600"}`}
+                  />
+                  <span className="min-w-0 flex-1">
+                    <span className="flex items-baseline justify-between gap-3">
+                      <span className="truncate font-medium text-mist-100">
+                        {lead.name}
+                      </span>
+                      <time className="shrink-0 text-xs text-mist-500">
+                        {new Date(lead.created_at).toLocaleDateString("pt-BR")}
+                      </time>
+                    </span>
+                    <span className="mt-0.5 line-clamp-2 text-sm text-mist-400">
+                      {lead.message}
+                    </span>
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
-    </div>
+    </>
+  );
+}
+
+function Shortcut({
+  href,
+  Icon,
+  title,
+  text,
+}: {
+  href: string;
+  Icon: typeof Clapperboard;
+  title: string;
+  text: string;
+}) {
+  return (
+    <Link
+      href={href}
+      className="group flex items-center gap-4 rounded-2xl border border-ink-700 bg-ink-900/60 p-5 transition-colors hover:border-sky-glow/50"
+    >
+      <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-sky-glow/10 text-sky-glow">
+        <Icon size={22} />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block font-medium text-mist-100">{title}</span>
+        <span className="block text-sm text-mist-500">{text}</span>
+      </span>
+      <ArrowUpRight
+        size={18}
+        className="shrink-0 text-mist-500 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+      />
+    </Link>
   );
 }

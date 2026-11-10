@@ -13,7 +13,11 @@ import { cn } from "@/lib/utils";
 
 const initialState: ContactState = { status: "idle" };
 
-export function ContactForm({ submitLabel = "Enviar mensagem" }: { submitLabel?: string }) {
+export function ContactForm({
+  submitLabel = "Enviar mensagem",
+}: {
+  submitLabel?: string;
+}) {
   const [state, formAction, pending] = useActionState(
     submitContact,
     initialState,
@@ -30,7 +34,6 @@ export function ContactForm({ submitLabel = "Enviar mensagem" }: { submitLabel?:
     mode: "onBlur",
   });
 
-  // Limpa o formulário após sucesso.
   useEffect(() => {
     if (state.status === "success") {
       reset();
@@ -44,7 +47,6 @@ export function ContactForm({ submitLabel = "Enviar mensagem" }: { submitLabel?:
     if (!valid) e.preventDefault();
   }
 
-  // Erros: prioriza os do client (RHF); usa os do server como fallback.
   const fieldError = (name: keyof ContactFormValues) =>
     errors[name]?.message ?? state.errors?.[name];
 
@@ -56,10 +58,19 @@ export function ContactForm({ submitLabel = "Enviar mensagem" }: { submitLabel?:
       noValidate
       className="space-y-5"
     >
+      {/* Honeypot anti-spam: invisível para pessoas */}
+      <div aria-hidden className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
+        <label>
+          Não preencha
+          <input type="text" name="website" tabIndex={-1} autoComplete="off" />
+        </label>
+      </div>
+
       <div className="grid gap-5 sm:grid-cols-2">
         <Field label="Nome" htmlFor="name" error={fieldError("name")}>
           <Input
             id="name"
+            autoComplete="name"
             placeholder="Seu nome"
             aria-invalid={!!fieldError("name")}
             {...register("name")}
@@ -70,6 +81,8 @@ export function ContactForm({ submitLabel = "Enviar mensagem" }: { submitLabel?:
           <Input
             id="email"
             type="email"
+            autoComplete="email"
+            inputMode="email"
             placeholder="voce@email.com"
             aria-invalid={!!fieldError("email")}
             {...register("email")}
@@ -78,30 +91,34 @@ export function ContactForm({ submitLabel = "Enviar mensagem" }: { submitLabel?:
       </div>
 
       <Field
-        label="Telefone / WhatsApp"
+        label="WhatsApp / telefone"
         htmlFor="phone"
         optional
         error={fieldError("phone")}
       >
         <Input
           id="phone"
+          type="tel"
+          autoComplete="tel"
+          inputMode="tel"
           placeholder="(11) 90000-0000"
           aria-invalid={!!fieldError("phone")}
           {...register("phone")}
         />
       </Field>
 
-      <Field label="Mensagem" htmlFor="message" error={fieldError("message")}>
+      <Field label="Sobre o projeto" htmlFor="message" error={fieldError("message")}>
         <Textarea
           id="message"
-          placeholder="Conte sobre o seu projeto: formato, prazo, referências..."
+          rows={5}
+          placeholder="Conte o que você quer filmar: formato, prazo, referências..."
           aria-invalid={!!fieldError("message")}
           {...register("message")}
         />
       </Field>
 
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-        <Button type="submit" size="lg" disabled={pending}>
+      <div className="flex flex-col gap-4 pt-1 sm:flex-row sm:items-center">
+        <Button type="submit" size="lg" disabled={pending} className="w-full sm:w-auto">
           {pending ? (
             <>
               <Loader2 size={18} className="animate-spin" />
@@ -115,24 +132,25 @@ export function ContactForm({ submitLabel = "Enviar mensagem" }: { submitLabel?:
           )}
         </Button>
 
-        {state.status !== "idle" && (
-          <p
-            role="status"
-            className={cn(
-              "flex items-center gap-2 text-sm",
-              state.status === "success"
-                ? "text-emerald-400"
-                : "text-red-400",
-            )}
-          >
-            {state.status === "success" ? (
-              <CheckCircle2 size={16} />
-            ) : (
-              <AlertCircle size={16} />
-            )}
-            {state.message}
-          </p>
-        )}
+        <p
+          role="status"
+          aria-live="polite"
+          className={cn(
+            "flex items-center gap-2 text-sm",
+            state.status === "success" ? "text-emerald-400" : "text-red-400",
+          )}
+        >
+          {state.status !== "idle" && (
+            <>
+              {state.status === "success" ? (
+                <CheckCircle2 size={16} className="shrink-0" />
+              ) : (
+                <AlertCircle size={16} className="shrink-0" />
+              )}
+              {state.message}
+            </>
+          )}
+        </p>
       </div>
     </form>
   );
@@ -153,17 +171,16 @@ function Field({
 }) {
   return (
     <div>
-      <label
-        htmlFor={htmlFor}
-        className="mb-1.5 block text-sm font-medium text-mist-300"
-      >
+      <label htmlFor={htmlFor} className="mb-2 block text-sm text-mist-300">
         {label}
-        {optional && (
-          <span className="ml-1 text-xs text-mist-500">(opcional)</span>
-        )}
+        {optional && <span className="ml-1.5 text-xs text-mist-500">(opcional)</span>}
       </label>
       {children}
-      {error && <p className="mt-1.5 text-xs text-red-400">{error}</p>}
+      {error && (
+        <p role="alert" className="mt-1.5 text-xs text-red-400">
+          {error}
+        </p>
+      )}
     </div>
   );
 }

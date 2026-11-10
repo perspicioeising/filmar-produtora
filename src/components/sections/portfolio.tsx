@@ -1,24 +1,27 @@
+import type { PortfolioContent, Project } from "@/lib/supabase/types";
 import { Reveal } from "@/components/ui/reveal";
 import { PortfolioGallery } from "./portfolio-gallery";
-import type { PortfolioContent, Project } from "@/lib/supabase/types";
 
-type Props = {
+export function Portfolio({
+  projects,
+  content,
+}: {
   projects: Project[];
   content: PortfolioContent;
-};
-
-export function Portfolio({ projects, content }: Props) {
+}) {
   return (
-    <section
-      id="portfolio"
-      className="border-t border-ink-800 py-24 sm:py-32 lg:py-40"
-    >
-      <div className="mx-auto max-w-6xl px-6">
-        <Reveal className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <h2 className="text-3xl leading-tight text-balance text-mist-100 sm:text-4xl lg:text-5xl">
-            {content.title}
-          </h2>
-          <p className="max-w-xs font-light text-mist-400 sm:text-right">
+    <section id="portfolio" className="bg-ink-950 py-20 sm:py-28 lg:py-36">
+      <div className="container-x">
+        <Reveal className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className="text-xs font-medium uppercase tracking-[0.3em] text-sky-glow">
+              Portfólio
+            </p>
+            <h2 className="mt-4 max-w-2xl text-4xl leading-[1.08] text-balance text-mist-100 sm:text-5xl lg:text-6xl">
+              {content.title}
+            </h2>
+          </div>
+          <p className="max-w-sm text-base leading-relaxed text-mist-400">
             {content.description}
           </p>
         </Reveal>

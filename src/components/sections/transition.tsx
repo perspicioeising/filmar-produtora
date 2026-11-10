@@ -1,12 +1,23 @@
-import { Reveal } from "@/components/ui/reveal";
 import type { TransitionContent } from "@/lib/supabase/types";
+import { Reveal } from "@/components/ui/reveal";
 
+/** Frase-manifesto em azul: respiro entre o portfólio e a apresentação. */
 export function Transition({ content }: { content: TransitionContent }) {
   return (
-    <section id="transicao" className="py-32 sm:py-44 lg:py-56">
-      <div className="mx-auto max-w-4xl px-6">
+    <section
+      aria-label="Manifesto"
+      className="relative overflow-hidden bg-sky-glow py-24 text-ink-950 sm:py-32 lg:py-44"
+    >
+      <div className="bg-grain pointer-events-none absolute inset-0 opacity-[0.12] mix-blend-multiply" />
+      <div className="container-x relative">
         <Reveal>
-          <p className="text-balance text-center text-2xl font-light leading-[1.4] text-mist-300 sm:text-3xl md:text-4xl">
+          <span
+            aria-hidden
+            className="block font-display text-7xl leading-none text-ink-950/25 sm:text-8xl"
+          >
+            “
+          </span>
+          <p className="-mt-4 max-w-4xl font-display text-3xl leading-[1.15] text-balance sm:text-5xl lg:text-6xl">
             {content.text}
           </p>
         </Reveal>

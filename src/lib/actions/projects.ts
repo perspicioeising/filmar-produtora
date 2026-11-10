@@ -1,10 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { slugify, storagePathFromUrl } from "@/lib/media";
 
 export type ProjectActionState = {
-  status: "idle" | "success" | "error";
+  status: "idle" | "error";
   message?: string;
 };
 
@@ -18,41 +20,37 @@ async function requireAuth() {
   return supabase;
 }
 
-/** Faz upload de um arquivo para um bucket e retorna a URL pública. */
-async function uploadToBucket(
+function revalidateAll() {
+  revalidatePath("/", "layout");
+}
+
+/** Gera um slug único: titulo, titulo-2, titulo-3... */
+async function uniqueSlug(
   supabase: Awaited<ReturnType<typeof createClient>>,
-  bucket: "videos" | "thumbnails",
-  file: File,
+  base: string,
+  ignoreId?: string,
 ): Promise<string> {
-  const ext = file.name.split(".").pop() ?? "bin";
-  const path = `${crypto.randomUUID()}.${ext}`;
-
-  const { error } = await supabase.storage.from(bucket).upload(path, file, {
-    cacheControl: "3600",
-    upsert: false,
-    contentType: file.type || undefined,
-  });
-  if (error) throw new Error(`Falha no upload (${bucket}): ${error.message}`);
-
-  const {
-    data: { publicUrl },
-  } = supabase.storage.from(bucket).getPublicUrl(path);
-  return publicUrl;
+  let candidate = base;
+  for (let n = 2; n < 50; n++) {
+    let query = supabase.from("projects").select("id").eq("slug", candidate);
+    if (ignoreId) query = query.neq("id", ignoreId);
+    const { data } = await query.maybeSingle();
+    if (!data) return candidate;
+    candidate = `${base}-${n}`;
+  }
+  return `${base}-${Date.now()}`;
 }
 
-/** Extrai o path do objeto a partir de uma URL pública do Storage. */
-function storagePathFromUrl(url: string, bucket: string): string | null {
-  const marker = `/storage/v1/object/public/${bucket}/`;
-  const idx = url.indexOf(marker);
-  if (idx === -1) return null;
-  return url.slice(idx + marker.length);
-}
-
-/** Cria ou atualiza um projeto, com upload opcional de vídeo/thumbnail. */
+/**
+ * Cria ou atualiza um projeto. Os arquivos (vídeo/thumbnail) já foram
+ * enviados direto do navegador ao Storage; aqui chegam apenas as URLs.
+ */
 export async function saveProject(
   _prev: ProjectActionState,
   formData: FormData,
 ): Promise<ProjectActionState> {
+  let redirectTo: string | null = null;
+
   try {
     const supabase = await requireAuth();
 
@@ -62,34 +60,37 @@ export async function saveProject(
       return { status: "error", message: "O título é obrigatório." };
     }
 
-    const description = String(formData.get("description") ?? "").trim();
-    const category = String(formData.get("category") ?? "").trim();
-    const client = String(formData.get("client") ?? "").trim();
-    const featured = formData.get("featured") === "on";
-    const sortOrder = Number(formData.get("sort_order") ?? 0) || 0;
+    const text = (name: string) => {
+      const value = String(formData.get(name) ?? "").trim();
+      return value || null;
+    };
 
-    const videoFile = formData.get("video") as File | null;
-    const thumbFile = formData.get("thumbnail") as File | null;
-
-    let video_url: string | undefined;
-    let thumbnail_url: string | undefined;
-
-    if (videoFile && videoFile.size > 0) {
-      video_url = await uploadToBucket(supabase, "videos", videoFile);
+    const yearRaw = String(formData.get("year") ?? "").trim();
+    const year = yearRaw ? Number(yearRaw) : null;
+    if (year !== null && (!Number.isInteger(year) || year < 1900 || year > 2100)) {
+      return { status: "error", message: "Ano inválido." };
     }
-    if (thumbFile && thumbFile.size > 0) {
-      thumbnail_url = await uploadToBucket(supabase, "thumbnails", thumbFile);
-    }
+
+    const slugInput = String(formData.get("slug") ?? "").trim();
+    const slug = await uniqueSlug(
+      supabase,
+      slugify(slugInput || title),
+      id || undefined,
+    );
 
     const payload = {
+      slug,
       title,
-      description: description || null,
-      category: category || null,
-      client: client || null,
-      featured,
-      sort_order: sortOrder,
-      ...(video_url ? { video_url } : {}),
-      ...(thumbnail_url ? { thumbnail_url } : {}),
+      description: text("description"),
+      category: text("category"),
+      client: text("client"),
+      role: text("role"),
+      year,
+      video_url: text("video_url"),
+      thumbnail_url: text("thumbnail_url"),
+      featured: formData.get("featured") === "on",
+      published: formData.get("published") === "on",
+      sort_order: Number(formData.get("sort_order") ?? 0) || 0,
     };
 
     if (id) {
@@ -103,17 +104,16 @@ export async function saveProject(
       if (error) throw new Error(error.message);
     }
 
-    revalidatePath("/admin");
-    revalidatePath("/");
-    return {
-      status: "success",
-      message: id ? "Projeto atualizado." : "Projeto criado.",
-    };
+    revalidateAll();
+    redirectTo = "/admin/projetos?salvo=1";
   } catch (err) {
     const message = err instanceof Error ? err.message : "Erro inesperado.";
     console.error("[saveProject]", message);
     return { status: "error", message };
   }
+
+  // redirect lança internamente; precisa ficar fora do try/catch.
+  redirect(redirectTo);
 }
 
 /** Remove um projeto e, quando possível, seus arquivos no Storage. */
@@ -122,12 +122,11 @@ export async function deleteProject(formData: FormData): Promise<void> {
   const id = String(formData.get("id") ?? "").trim();
   if (!id) return;
 
-  // Busca URLs para limpar o Storage após remover a linha.
   const { data: project } = await supabase
     .from("projects")
     .select("video_url, thumbnail_url")
     .eq("id", id)
-    .single();
+    .maybeSingle();
 
   const { error } = await supabase.from("projects").delete().eq("id", id);
   if (error) {
@@ -135,16 +134,31 @@ export async function deleteProject(formData: FormData): Promise<void> {
     return;
   }
 
-  // Best-effort: remove os arquivos associados.
-  if (project?.video_url) {
-    const path = storagePathFromUrl(project.video_url, "videos");
-    if (path) await supabase.storage.from("videos").remove([path]);
-  }
-  if (project?.thumbnail_url) {
-    const path = storagePathFromUrl(project.thumbnail_url, "thumbnails");
-    if (path) await supabase.storage.from("thumbnails").remove([path]);
+  // Best-effort: remove os arquivos associados (só os que estão no bucket).
+  const paths = [project?.video_url, project?.thumbnail_url]
+    .map((url) => (url ? storagePathFromUrl(url) : null))
+    .filter((p): p is string => Boolean(p));
+  if (paths.length > 0) {
+    await supabase.storage.from("media").remove(paths);
   }
 
-  revalidatePath("/admin");
-  revalidatePath("/");
+  revalidateAll();
+}
+
+/** Alterna entre publicado e rascunho direto na lista. */
+export async function togglePublished(formData: FormData): Promise<void> {
+  const supabase = await requireAuth();
+  const id = String(formData.get("id") ?? "").trim();
+  const next = formData.get("next") === "true";
+  if (!id) return;
+
+  const { error } = await supabase
+    .from("projects")
+    .update({ published: next })
+    .eq("id", id);
+  if (error) {
+    console.error("[togglePublished]", error.message);
+    return;
+  }
+  revalidateAll();
 }

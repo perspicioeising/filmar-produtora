@@ -20,6 +20,7 @@ import type {
  */
 
 const heroDefault: HeroContent = {
+  eyebrow: "Produtora audiovisual",
   title: "Filmar é encontrar o que existe entre a história e o olhar.",
   description:
     "Direção e produção audiovisual para marcas, lugares e experiências.",

@@ -1,32 +1,36 @@
-import { Reveal } from "@/components/ui/reveal";
 import type { BeliefsContent } from "@/lib/supabase/types";
+import { Reveal } from "@/components/ui/reveal";
 
-/**
- * "O que acreditamos" — momento editorial dentro da página.
- * Fundo claro invertendo a paleta para quebrar o ritmo das demais seções.
- */
 export function Beliefs({ content }: { content: BeliefsContent }) {
+  const [lead, ...rest] = content.paragraphs;
+
   return (
     <section
       id="acreditamos"
-      className="bg-mist-100 py-28 text-ink-950 sm:py-40 lg:py-52"
+      className="relative overflow-hidden bg-sky-glow py-20 text-ink-950 sm:py-28 lg:py-36"
     >
-      <div className="mx-auto max-w-4xl px-6">
-        <Reveal>
-          <p className="text-xs uppercase tracking-[0.3em] text-ink-600">
+      <div className="bg-grain pointer-events-none absolute inset-0 opacity-[0.12] mix-blend-multiply" />
+      <div className="container-x relative grid gap-10 lg:grid-cols-12 lg:gap-16">
+        <Reveal className="lg:col-span-4">
+          <p className="text-xs font-medium uppercase tracking-[0.3em]">
             {content.title}
           </p>
         </Reveal>
 
-        <div className="mt-10 space-y-8">
-          {content.paragraphs.map((paragraph, i) => (
-            <Reveal key={i} delay={i * 100}>
-              <p className="text-balance text-2xl font-light leading-[1.4] sm:text-3xl md:text-4xl">
-                {paragraph}
+        <Reveal className="lg:col-span-8" delay={100}>
+          {lead && (
+            <p className="font-display text-3xl leading-[1.15] text-balance sm:text-5xl">
+              {lead}
+            </p>
+          )}
+          <div className="mt-8 max-w-2xl space-y-5 text-base leading-relaxed text-ink-800 sm:text-lg">
+            {rest.map((p, i) => (
+              <p key={i} className="text-pretty">
+                {p}
               </p>
-            </Reveal>
-          ))}
-        </div>
+            ))}
+          </div>
+        </Reveal>
       </div>
     </section>
   );

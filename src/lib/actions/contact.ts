@@ -26,6 +26,11 @@ export async function submitContact(
     message: String(formData.get("message") ?? ""),
   };
 
+  // Honeypot: bots preenchem o campo oculto. Responde "sucesso" sem salvar.
+  if (String(formData.get("website") ?? "").length > 0) {
+    return { status: "success", message: "Mensagem enviada!" };
+  }
+
   const parsed = contactSchema.safeParse(raw);
   if (!parsed.success) {
     const fieldErrors: ContactState["errors"] = {};

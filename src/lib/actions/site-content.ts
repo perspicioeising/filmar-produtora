@@ -43,6 +43,7 @@ const processStepSchema = z.object({
 });
 
 const heroSchema = z.object({
+  eyebrow: z.string().trim().default(""),
   title: z.string().trim().min(1, "O título é obrigatório."),
   description: z.string().trim().default(""),
   cta: z.string().trim().min(1, "O texto do botão é obrigatório."),
